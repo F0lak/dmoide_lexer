@@ -1,8 +1,18 @@
 #include "lexer.hpp"
 #include <iostream>
+#include <array>
 
+std::array<TokenStrategy*, 5> Lexer::strategy_lookup;
 
-bool lexer::Lexer::is_escape_character(const char character)
+Lexer::Lexer() {
+    this->initialize();
+}
+
+void Lexer::initialize() {
+    strategy_lookup.fill(PlaceholderStrategy::instance());
+}
+
+bool Lexer::is_escape_character(const char character)
 {
     switch(current_context){
         case Context::LABEL :
@@ -39,7 +49,7 @@ bool lexer::Lexer::is_escape_character(const char character)
     return true;
 }
 
-std::string lexer::Lexer::peek(const std::string& source) {
+std::string Lexer::peek(const std::string& source) {
     std::string peeked_value = "";
     size_t peek_cursor_pos = cursor_pos;
     while(peek_cursor_pos < source.length()) {
@@ -57,9 +67,10 @@ std::string lexer::Lexer::peek(const std::string& source) {
     return peeked_value;
 }
 
-std::string lexer::Lexer::scan(const std::string &source) {
+std::string Lexer::scan(const std::string &source) {
     std::cout << "Scanning String\n";
     std::string result = "";
+    /*
     while (cursor_pos < source.length()) {
         char current = source[cursor_pos];
 
@@ -108,5 +119,6 @@ std::string lexer::Lexer::scan(const std::string &source) {
     for(const auto& t : tokens) {
         result += t.value;
     }
+        */
     return result;
 }
