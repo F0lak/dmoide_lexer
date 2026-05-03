@@ -6,8 +6,8 @@ var/matrix/__uilib_9slice_matrix = matrix()
 
 #define matrix_translate(ref,x,y) __uilib_translation_matrix.c = x; __uilib_translation_matrix.f = y; ref.transform = __uilib_translation_matrix
 #define matrix_9slice(ref,x,y,w,h) __uilib_9slice_matrix.c = x; __uilib_9slice_matrix.f = y; __uilib_9slice_matrix.a = w; __uilib_9slice_matrix.e = h; ref.transform = __uilib_9slice_matrix
-
-proc
+z
+procz
     resize_slicebox(list/slices, width=0, height=0, slice_width=UILIB_SLICE_WIDTH, slice_height=UILIB_SLICE_HEIGHT, x=0, y=0, start=1)
         var/stretch_x = (width / slice_width) - 2, stretch_y = (height / slice_height) - 2
         var/edge_x = x + width - slice_width, edge_y = y + height - slice_height

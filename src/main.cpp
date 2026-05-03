@@ -27,13 +27,40 @@ void test_run() {
     std::cout << "Token Result: " << lexer.scan(file_contents) << "\n";
 }
 
-void lexer_test() {
-    Lexer lexer;
-    std::cout << "Running Lexer Test with LUT[" << lexer.strategy_lookup.size() << "]\n";
-
+void count_strategies(Lexer lexer) {
+    std::cout << "Lexer has " << lexer.strategy_lookup.size() << " TokenStrategies:\n";
     for(size_t i = 0; i < lexer.strategy_lookup.size(); ++i) {
-        std::cout << "Index[" << i << "]: " << lexer.strategy_lookup[i]->name() << "\n";
+        std::cout << "  Index[" << i << "]: " << lexer.strategy_lookup[i]->name() << "\n";
     }
+}
+
+void lexer_test() {
+    std::cout << "Running Lexer Test\n";
+    std::cout << "Current path is: " << std::filesystem::current_path() << "\n";
+    Lexer lexer;
+    std::cout << "Lexer Constructed Successfully\n\n";
+    std::string file_contents = load_file(token_test_file);
+    std::cout << token_test_file << " is " << file_contents.size() << " characters long\n";
+
+    try {
+        lexer.set_source(file_contents);
+        std::cout << "Lexer Source set successfully\n";
+    }
+    catch(const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
+
+    try{
+        lexer.count_lines();
+        std::cout << "Lexer Lines counted successfully\n";
+    }
+    catch(const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
+    std::cout << token_test_file << " has " << lexer.line_map.size() << " lines\n";
+   // std::cout << "\nPress the any Key to end test...\n";
+   // std::cin.get();
+    std::cout << "Lexer Test Complete";
 }
 
 int main() {
