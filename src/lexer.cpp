@@ -75,18 +75,18 @@ std::string Lexer::scan(const std::string& source) {
             register_token(token_result);
             continue;
         }
-
+/*
         // Comments
         if(current == '/'){
             char next = source[cursor_pos + 1];
-            if(next != '/' && next != '*'){
+            if(next == '/'){
+                auto* strategy = strategy_lookup[StrategyContext::CommentInline];
+                TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
+                register_token(token_result);
                 continue;
             }
-            auto* strategy = strategy_lookup[StrategyContext::Comment];
-            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            register_token(token_result);
         }
-        
+  */      
         // Operators
         if(DMOperators::is_operator(current)){
             auto* strategy = strategy_lookup[StrategyContext::Operator];
@@ -112,11 +112,12 @@ std::string Lexer::scan(const std::string& source) {
 
 // Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
 void Lexer::register_token(TokenStrategyResult result) {
+    cursor_pos += result.characters_consumed;
+
     if(result.token.type == DMToken::TokenType::IGNORE){
         return;
     }
     tokens.emplace_back(result.token);
-    cursor_pos += result.characters_consumed;
 }
 
 std::string Lexer::readable_token(DMToken token) {
