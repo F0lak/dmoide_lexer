@@ -6,13 +6,20 @@ struct DMToken {
     public:
 enum class TokenType : uint16_t {
     PLACEHOLDER,
-    IGNORE, // should be removed at some point.  Shouldn't be tokenized.
     END_OF_FILE,
     ERROR,
-    
-    IDENTIFIER,
+
+    // These tokens are discarded by the lexer before passing it to the parser
+    // They exist to classify discarded text for debugging and maybe syntax highlighting
+    IGNORE,
     WHITESPACE,
+    COMMENT_INLINE,
+    COMMENT_MULTILINE,
+    
+    // Misc
+    IDENTIFIER,
     NEWLINE,
+    SEPARATOR,
 
     // TODO: Sort these based on order of operations as defined in: https://www.byond.com/docs/ref/#/operator
     NULL_OP, // Error case where an operator doesn't exist for some reason

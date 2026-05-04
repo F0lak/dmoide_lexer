@@ -21,6 +21,11 @@ TokenStrategyResult WhitespaceStrategy::run(Lexer& lexer, const std::string& sou
         DMToken new_token = DMToken( DMToken::TokenType::NEWLINE, "NEWLINE", coords);
         return TokenStrategyResult(new_token, peek_dist);
     }
+    if(current == ' '){
+        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
+        DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "WHITESPACE", coords);
+        return TokenStrategyResult(new_token, 1);
+    }
     else {
         CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
         DMToken new_token = DMToken( DMToken::TokenType::IGNORE, "IGNORE", coords);
