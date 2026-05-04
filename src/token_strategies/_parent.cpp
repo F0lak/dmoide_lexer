@@ -9,6 +9,9 @@ uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, st
     int peek_cursor_steps = 0;
     while(peek_cursor_pos < source.length()) {
         char current = source[peek_cursor_pos];
+        if(current == '\\'){
+            std::cout << "escape character detected";
+        }
         if(is_escape_character(current)){
             break;
         }

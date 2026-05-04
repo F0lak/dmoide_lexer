@@ -62,17 +62,13 @@ std::string Lexer::scan(const std::string& source) {
 
         // Whitespace
         if(std::isspace(current)) {
-            auto* strategy = strategy_lookup[StrategyContext::Whitespace];
-            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            register_token(token_result);
+            register_token(StrategyContext::Whitespace);
             continue;
         }
 
         // Identifiers and Keywords
         if(std::isalpha(current) || current == '_'){
-            auto* strategy = strategy_lookup[StrategyContext::Identifier];
-            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            register_token(token_result);
+            register_token(StrategyContext::Identifier);
             continue;
         }
 
@@ -80,18 +76,15 @@ std::string Lexer::scan(const std::string& source) {
         if(current == '/'){
             char next = source[cursor_pos + 1];
             if(next == '/'){
-                auto* strategy = strategy_lookup[StrategyContext::CommentInline];
-                TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-                register_token(token_result);
+                register_token(StrategyContext::CommentInline);
                 continue;
             }
+            // Handle Multiline here
         }
        
         // Operators
         if(DMOperators::is_operator(current)){
-            auto* strategy = strategy_lookup[StrategyContext::Operator];
-            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            register_token(token_result);
+            register_token(StrategyContext::Operator);
             continue;
         }
 
@@ -111,7 +104,10 @@ std::string Lexer::scan(const std::string& source) {
 }
 
 // Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
-void Lexer::register_token(TokenStrategyResult result) {
+void Lexer::register_token(StrategyContext strat_context) {
+    auto* strategy = strategy_lookup[strat_context];
+    TokenStrategyResult result = strategy->run(*this, source, cursor_pos);
+
     cursor_pos += result.characters_consumed;
 
     switch(result.token.type) {
@@ -119,7 +115,7 @@ void Lexer::register_token(TokenStrategyResult result) {
         case DMToken::TokenType::WHITESPACE:
             return;
     }
-    
+
     tokens.emplace_back(result.token);
 }
 
