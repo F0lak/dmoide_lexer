@@ -17,3 +17,11 @@ Assignment
 
 // Miscellaneous
 , [
+
+    /* Multi //
+    Line\ *
+    Comment */
+
+// /* tits
+and
+ass

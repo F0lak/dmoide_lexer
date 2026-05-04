@@ -11,6 +11,12 @@ struct TokenStrategyResult {
     int characters_consumed;
 };
 
+struct TerminatorResult {
+    TerminatorResult(bool f, int s);
+    bool found;
+    int size;
+};
+
 class TokenStrategy {
     public:
         virtual std::string name() const = 0;
@@ -19,6 +25,7 @@ class TokenStrategy {
     protected:
         uint32_t peek(const std::string& source, int cursor_pos, std::optional<int> max_steps = std::nullopt);
         virtual bool is_escape_character(char c) = 0;
+        virtual TerminatorResult is_terminated(const std::string& source, int cursor_pos) = 0;
 };
 
 #define TOKEN_STRATEGY(StratName) \
@@ -28,7 +35,8 @@ class StratName : public TokenStrategy { \
         static StratName* instance(); \
         TokenStrategyResult run(Lexer& lexer, const std::string& source, int pos) override; \
     protected: \
-        bool is_escape_character(char c) override; \
+        bool is_escape_character(char c) override;\
+        TerminatorResult is_terminated(const std::string& source, int cursor_pos) override;\
 };
 
 TOKEN_STRATEGY(PlaceholderStrategy)
@@ -37,3 +45,4 @@ TOKEN_STRATEGY(NumberStrategy)
 TOKEN_STRATEGY(IdentifierStrategy)
 TOKEN_STRATEGY(OperatorStrategy)
 TOKEN_STRATEGY(CommentInlineStrategy)
+TOKEN_STRATEGY(CommentMultilineStrategy)

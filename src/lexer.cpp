@@ -72,9 +72,6 @@ std::string Lexer::scan(const std::string& source) {
 
             if( cursor_pos + 1 < source.length() &&
                 std::isalpha(source[cursor_pos + 1])){
-                    // path operator
-                    // pass off to operator strategy?
-                    // Sure
                     // Will need to change this to Path strategy when that's implemented
                     register_token(StrategyContext::Operator);
                     continue;
@@ -106,7 +103,10 @@ std::string Lexer::scan(const std::string& source) {
                 register_token(StrategyContext::CommentInline);
                 continue;
             }
-            // Handle Multiline here
+            if(next == '*'){
+                register_token(StrategyContext::CommentMultiline);
+                continue;
+            }
         }
        
         // Operators

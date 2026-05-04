@@ -20,3 +20,7 @@ TokenStrategyResult PlaceholderStrategy::run(Lexer& lexer, const std::string& so
     DMToken token = DMToken(DMToken::TokenType::PLACEHOLDER, "PLACEHOLDER", coords);
     return { token, 1 };
 }
+
+TerminatorResult PlaceholderStrategy::is_terminated(const std::string& source, int cursor_pos) {
+    return TerminatorResult(true, 0);
+}

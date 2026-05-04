@@ -4,9 +4,10 @@
 
 TokenStrategyResult::TokenStrategyResult(DMToken t, uint32_t d) : token(t), characters_consumed(d) {}
 
+TerminatorResult::TerminatorResult(bool f, int s) : found(f), size(s) {}
+
 uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, std::optional<int> max_steps) {
     int peek_cursor_pos = cursor_start_pos;
-    int peek_cursor_steps = 0;
     while(peek_cursor_pos < source.length()) {
         char current = source[peek_cursor_pos];
         if(current == '\\'){
@@ -18,12 +19,15 @@ uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, st
                     continue;
                 }
         }
-        if(is_escape_character(current)){
+        
+        TerminatorResult termination = is_terminated(source, peek_cursor_pos);
+
+        if(termination.found == true){
+            peek_cursor_pos += termination.size;
             break;
         }
         else{
             peek_cursor_pos++;
-            peek_cursor_steps++;
         }
     }
 

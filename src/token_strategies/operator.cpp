@@ -38,3 +38,8 @@ bool OperatorStrategy::is_escape_character(char character) {
     }
     return true;
 }
+
+TerminatorResult OperatorStrategy::is_terminated(const std::string& source, int cursor_pos) {
+    char character = source[cursor_pos];
+    return TerminatorResult(is_escape_character(character), 0);
+}
