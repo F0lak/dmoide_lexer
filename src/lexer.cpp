@@ -75,7 +75,7 @@ std::string Lexer::scan(const std::string& source) {
             register_token(token_result);
             continue;
         }
-/*
+
         // Comments
         if(current == '/'){
             char next = source[cursor_pos + 1];
@@ -86,7 +86,7 @@ std::string Lexer::scan(const std::string& source) {
                 continue;
             }
         }
-  */      
+       
         // Operators
         if(DMOperators::is_operator(current)){
             auto* strategy = strategy_lookup[StrategyContext::Operator];
@@ -114,9 +114,12 @@ std::string Lexer::scan(const std::string& source) {
 void Lexer::register_token(TokenStrategyResult result) {
     cursor_pos += result.characters_consumed;
 
-    if(result.token.type == DMToken::TokenType::IGNORE){
-        return;
+    switch(result.token.type) {
+        case DMToken::TokenType::IGNORE:
+        case DMToken::TokenType::WHITESPACE:
+            return;
     }
+    
     tokens.emplace_back(result.token);
 }
 

@@ -13,7 +13,8 @@ class Lexer {
             Whitespace,
             Identifier,
             Operator,
-            Comment
+            CommentInline,
+            CommentMultiline
         };
 
         Lexer();

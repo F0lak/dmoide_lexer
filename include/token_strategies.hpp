@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <optional>
 #include "dm_tokens.hpp"
 
 class Lexer;
@@ -16,7 +17,7 @@ class TokenStrategy {
         virtual TokenStrategyResult run(Lexer& lexer, const std::string& source, int pos) = 0;
         virtual ~TokenStrategy() = default;
     protected:
-        uint32_t peek(const std::string& source, int cursor_pos);
+        uint32_t peek(const std::string& source, int cursor_pos, std::optional<int> max_steps = std::nullopt);
         virtual bool is_escape_character(char c) = 0;
 };
 
@@ -35,4 +36,4 @@ TOKEN_STRATEGY(WhitespaceStrategy)
 TOKEN_STRATEGY(NumberStrategy)
 TOKEN_STRATEGY(IdentifierStrategy)
 TOKEN_STRATEGY(OperatorStrategy)
-TOKEN_STRATEGY(CommentStrategy)
+TOKEN_STRATEGY(CommentInlineStrategy)

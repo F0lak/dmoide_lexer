@@ -9,6 +9,6 @@ void Lexer::initialize() {
         {StrategyContext::Whitespace, WhitespaceStrategy::instance()},
         {StrategyContext::Identifier, IdentifierStrategy::instance()},
         {StrategyContext::Operator, OperatorStrategy::instance()},
-        {StrategyContext::Comment, CommentStrategy::instance()}
+        {StrategyContext::CommentInline, CommentInlineStrategy::instance()}
     };
 }
