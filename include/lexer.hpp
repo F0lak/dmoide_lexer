@@ -14,7 +14,8 @@ class Lexer {
             Identifier,
             Operator,
             CommentInline,
-            CommentMultiline
+            CommentMultiline,
+            Number
         };
 
         Lexer();

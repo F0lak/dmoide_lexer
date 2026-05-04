@@ -21,7 +21,6 @@ uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, st
         }
         
         TerminatorResult termination = is_terminated(source, peek_cursor_pos);
-
         if(termination.found == true){
             peek_cursor_pos += termination.size;
             break;

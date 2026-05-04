@@ -10,6 +10,7 @@ std::string token_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/token_te
 std::string operator_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/operators.dm";
 std::string milestone1_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/keyword_test.dm";
 std::string milestone2_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/operators.dm";
+std::string milestone3_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/number_test.dm";
 
 std::string load_file(const std::string& path) {
     std::ifstream file(path, std::ios::in | std::ios::binary);
@@ -26,7 +27,7 @@ std::string load_file(const std::string& path) {
 void test_run() {
     std::cout << "Current path is: " << std::filesystem::current_path() << std::endl;
     Lexer lexer;
-    const std::string TEST_FILE = milestone2_test_file;
+    const std::string TEST_FILE = milestone3_test_file;
     std::string file_contents = load_file(TEST_FILE);
     lexer.set_source(file_contents);
     std::cout << "Lexer Source set successfully\n";

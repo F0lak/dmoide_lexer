@@ -115,6 +115,12 @@ std::string Lexer::scan(const std::string& source) {
             continue;
         }
 
+        // Numbers
+        if(std::isdigit(current)){
+            register_token(StrategyContext::Number);
+            continue;
+        }
+
         else {
             cursor_pos++;
         }

@@ -41,8 +41,19 @@ class StratName : public TokenStrategy { \
 
 TOKEN_STRATEGY(PlaceholderStrategy)
 TOKEN_STRATEGY(WhitespaceStrategy)
-TOKEN_STRATEGY(NumberStrategy)
 TOKEN_STRATEGY(IdentifierStrategy)
 TOKEN_STRATEGY(OperatorStrategy)
 TOKEN_STRATEGY(CommentInlineStrategy)
 TOKEN_STRATEGY(CommentMultilineStrategy)
+
+class NumberStrategy : public TokenStrategy { 
+    public: 
+        std::string name() const override; 
+        static NumberStrategy* instance(); 
+        TokenStrategyResult run(Lexer& lexer, const std::string& source, int pos) override; 
+    protected: 
+        bool is_escape_character(char c) override;
+        TerminatorResult is_terminated(const std::string& source, int cursor_pos) override;
+    private:
+        int dot_count = 0;
+};

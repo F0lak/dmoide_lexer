@@ -17,6 +17,7 @@ enum class TokenType : uint16_t {
     COMMENT_MULTILINE,
     
     // Misc
+    NUMBER,
     IDENTIFIER,
     NEWLINE,
     SEPARATOR,

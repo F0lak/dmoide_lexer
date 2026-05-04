@@ -10,6 +10,7 @@ void Lexer::initialize() {
         {StrategyContext::Identifier,       IdentifierStrategy::instance()},
         {StrategyContext::Operator,         OperatorStrategy::instance()},
         {StrategyContext::CommentInline,    CommentInlineStrategy::instance()},
-        {StrategyContext::CommentMultiline, CommentMultilineStrategy::instance()}
+        {StrategyContext::CommentMultiline, CommentMultilineStrategy::instance()},
+        {StrategyContext::Number,           NumberStrategy::instance()}
     };
 }
