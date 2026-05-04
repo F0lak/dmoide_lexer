@@ -1,4 +1,5 @@
 #include "lexer.hpp"
+#include "dm_operators.hpp"
 #include <iostream>
 #include <array>
 #include <format>
@@ -39,25 +40,15 @@ void Lexer::count_lines() {
 std::unordered_map<Lexer::StrategyContext, TokenStrategy*> Lexer::strategy_lookup;
 
 CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
-    std::cout << "Calculating coordinates\n";
     auto it = std::upper_bound(line_map.begin(), line_map.end(), pos);
-
-    std::cout << "Setting Line Position\n";
-
     size_t line_index = std::distance(line_map.begin(), it);
-
-    std::cout << "Line index is " << line_index << "\n";
-    std::cout << "Setting Column Position\n";
-    
     size_t column_index = pos;
     if(line_index > 0){
         column_index = pos - line_map[line_index - 1];
     }
-
-    std::cout << "Constructing Struct\n";
     CursorCoordinate coordinates = { line_index, column_index };
 
-    std::cout << "Returning Coordinates Struct: line " << line_index << " column " << column_index << "\n";
+  //  std::cout << "Returning Coordinates Struct: line " << line_index << " column " << column_index << "\n";
     return coordinates;
 }
 
@@ -70,26 +61,27 @@ std::string Lexer::scan(const std::string& source) {
         char current = source[cursor_pos];
 
         if(std::isspace(current)) {
-            std::cout << "Whitespace time\n";
             auto* strategy = strategy_lookup[StrategyContext::Whitespace];
-            std::cout << "Running Strategy\n";
             TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            std::cout << "Result: " << token_result.token.value << "\n";
             tokens.emplace_back(token_result.token);
             cursor_pos += token_result.characters_consumed;
-            std::cout << "Moving cursor ahead " << token_result.characters_consumed << " columns\n";
         }
 
-        if(std::isalpha(current) || current == '_'){
-            std::cout << "Whitespace time\n";
+        else if(std::isalpha(current) || current == '_'){
             auto* strategy = strategy_lookup[StrategyContext::Identifier];
-            std::cout << "Running Strategy\n";
             TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            std::cout << "Result: " << token_result.token.value << "\n";
             tokens.emplace_back(token_result.token);
             cursor_pos += token_result.characters_consumed;
-            std::cout << "Moving cursor ahead " << token_result.characters_consumed << " columns\n";
         }
+        
+        else if(DMOperators::is_operator(current)){
+            std::cout << "OPERATOR " << current;
+            auto* strategy = strategy_lookup[StrategyContext::Operator];
+            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
+            tokens.emplace_back(token_result.token);
+            cursor_pos += token_result.characters_consumed;
+        }
+
         else {
             cursor_pos++;
         }
@@ -106,5 +98,11 @@ std::string Lexer::scan(const std::string& source) {
 }
 
 std::string Lexer::readable_token(DMToken token) {
-    return std::format("[{} L{} C{}]", token.value, token.line, token.column);
+    if(token.type == DMToken::TokenType::IGNORE){
+        return "";
+    }
+    if(token.type == DMToken::TokenType::NEWLINE){
+        return "\n";
+    }
+    return std::format("[{} L{} C{}]\n", token.value, token.line, token.column);
 }

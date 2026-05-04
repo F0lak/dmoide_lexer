@@ -9,6 +9,7 @@ std::string newline_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/newlin
 std::string token_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/token_test.dm";
 std::string operator_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/operators.dm";
 std::string milestone1_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/keyword_test.dm";
+std::string milestone2_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/operators.dm";
 
 std::string load_file(const std::string& path) {
     std::ifstream file(path, std::ios::in | std::ios::binary);
@@ -25,15 +26,16 @@ std::string load_file(const std::string& path) {
 void test_run() {
     std::cout << "Current path is: " << std::filesystem::current_path() << std::endl;
     Lexer lexer;
-    std::string file_contents = load_file(milestone1_test_file);
+    const std::string TEST_FILE = milestone2_test_file;
+    std::string file_contents = load_file(TEST_FILE);
     lexer.set_source(file_contents);
     std::cout << "Lexer Source set successfully\n";
 
     std::string scan_result = lexer.scan(file_contents);
     std::cout << "Scan Result: " << scan_result << "\n";
-    
-    std::cout << milestone1_test_file << " is " << file_contents.size() << " characters long\n";
-    std::cout << milestone1_test_file << " has " << lexer.line_map.size() << " lines\n";
+
+    std::cout << TEST_FILE << " is " << file_contents.size() << " characters long\n";
+    std::cout << TEST_FILE << " has " << lexer.line_map.size() << " lines\n";
 }
 
 void count_strategies(Lexer lexer) {

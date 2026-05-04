@@ -16,13 +16,9 @@ TokenStrategyResult WhitespaceStrategy::run(Lexer& lexer, const std::string& sou
     char current = source[pos];
     if(current == '\r') {
         uint32_t peek_dist = peek(source, pos);
-        std::cout << "we're in a carriage return\n";
         pos += peek_dist;
-        std::cout << "Creating result:\n    CursorCoordinate\n";
         CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        std::cout << "  DMToken\n";
         DMToken new_token = DMToken( DMToken::TokenType::NEWLINE, "NEWLINE", coords);
-        std::cout << "Returning result: " << new_token.value << "\n";
         return TokenStrategyResult(new_token, peek_dist);
     }
     else {
