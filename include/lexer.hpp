@@ -12,7 +12,8 @@ class Lexer {
             Default,
             Whitespace,
             Identifier,
-            Operator
+            Operator,
+            Comment
         };
 
         Lexer();
@@ -22,6 +23,7 @@ class Lexer {
         std::string scan(const std::string& source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
+        void register_token(TokenStrategyResult result);
         std::string readable_token(DMToken token);
 
         bool is_line_map_dirty = true;

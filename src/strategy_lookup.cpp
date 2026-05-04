@@ -8,6 +8,7 @@ void Lexer::initialize() {
         {StrategyContext::Default, PlaceholderStrategy::instance()},
         {StrategyContext::Whitespace, WhitespaceStrategy::instance()},
         {StrategyContext::Identifier, IdentifierStrategy::instance()},
-        {StrategyContext::Operator, OperatorStrategy::instance()}
+        {StrategyContext::Operator, OperatorStrategy::instance()},
+        {StrategyContext::Comment, CommentStrategy::instance()}
     };
 }

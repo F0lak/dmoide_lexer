@@ -60,26 +60,39 @@ std::string Lexer::scan(const std::string& source) {
     while (cursor_pos < source.length()) {
         char current = source[cursor_pos];
 
+        // Whitespace
         if(std::isspace(current)) {
             auto* strategy = strategy_lookup[StrategyContext::Whitespace];
             TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            tokens.emplace_back(token_result.token);
-            cursor_pos += token_result.characters_consumed;
+            register_token(token_result);
+            continue;
         }
 
-        else if(std::isalpha(current) || current == '_'){
+        // Identifiers and Keywords
+        if(std::isalpha(current) || current == '_'){
             auto* strategy = strategy_lookup[StrategyContext::Identifier];
             TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            tokens.emplace_back(token_result.token);
-            cursor_pos += token_result.characters_consumed;
+            register_token(token_result);
+            continue;
+        }
+
+        // Comments
+        if(current == '/'){
+            char next = source[cursor_pos + 1];
+            if(next != '/' && next != '*'){
+                continue;
+            }
+            auto* strategy = strategy_lookup[StrategyContext::Comment];
+            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
+            register_token(token_result);
         }
         
-        else if(DMOperators::is_operator(current)){
-            std::cout << "OPERATOR " << current;
+        // Operators
+        if(DMOperators::is_operator(current)){
             auto* strategy = strategy_lookup[StrategyContext::Operator];
             TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
-            tokens.emplace_back(token_result.token);
-            cursor_pos += token_result.characters_consumed;
+            register_token(token_result);
+            continue;
         }
 
         else {
@@ -89,12 +102,21 @@ std::string Lexer::scan(const std::string& source) {
 
     CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
     DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, "EOF", cursor_coord);
-    tokens.emplace_back(eof_token);
+    tokens.emplace_back(eof_token); // register this immediately since it's known to be EOF
 
     for(const auto& t : tokens) {
         result += readable_token(t);
     }
     return result;
+}
+
+// Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
+void Lexer::register_token(TokenStrategyResult result) {
+    if(result.token.type == DMToken::TokenType::IGNORE){
+        return;
+    }
+    tokens.emplace_back(result.token);
+    cursor_pos += result.characters_consumed;
 }
 
 std::string Lexer::readable_token(DMToken token) {
