@@ -4,13 +4,7 @@
 #include <unordered_map>
 #include "dm_tokens.hpp"
 #include "token_strategies.hpp"
-
-struct CursorCoordinate {
-    CursorCoordinate(size_t l, size_t c);
-    uint32_t line;
-    uint32_t column;
-};
-
+#include "cursor_coordinates.hpp"
 
 class Lexer {
     public:

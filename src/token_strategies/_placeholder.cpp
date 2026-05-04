@@ -17,6 +17,6 @@ bool PlaceholderStrategy::is_escape_character(char c) {
 
 TokenStrategyResult PlaceholderStrategy::run(Lexer& lexer, const std::string& source, int pos) {
     CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-    DMToken token = DMToken(DMToken::TokenType::PLACEHOLDER, "[PLACEHOLDER]", coords.line, coords.column);
+    DMToken token = DMToken(DMToken::TokenType::PLACEHOLDER, "[PLACEHOLDER]", coords);
     return { token, 1 };
 }

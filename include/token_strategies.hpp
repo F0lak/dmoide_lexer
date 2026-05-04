@@ -33,3 +33,5 @@ class StratName : public TokenStrategy { \
 TOKEN_STRATEGY(PlaceholderStrategy)
 TOKEN_STRATEGY(WhitespaceStrategy)
 TOKEN_STRATEGY(NumberStrategy)
+TOKEN_STRATEGY(CommentStrategy)
+TOKEN_STRATEGY(IdentifierStrategy)

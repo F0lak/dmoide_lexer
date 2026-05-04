@@ -1,12 +1,41 @@
-// Structural & Type Keywords
-var proc verb obj mob turf area datum atom world client list
 // Control Flow
-if else for do while switch break continue return
-// Logic & Constants
-as in to set null spawn
-// Logic Literals
-TRUE FALSE
-// Built-in References
-usr src args
-// Memory & Inheritance
-new del ..
+break
+continue
+return
+goto
+if
+else
+switch
+case
+default
+for
+while
+do
+to
+in
+as
+
+// Variable & Data Management
+var
+global
+static
+tmp
+const
+arg
+new
+del
+
+// Functionality & Execution
+proc
+verb
+spawn
+sleep
+
+// Error Handling & Safety
+try
+catch
+throw
+final
+
+// Directives & Settings
+set

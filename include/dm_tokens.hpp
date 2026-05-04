@@ -85,7 +85,7 @@ struct DMToken {
 
             };
 
-        DMToken( DMToken::TokenType t, std::string v, uint32_t l, uint32_t c );
+        DMToken( DMToken::TokenType t, std::string v,  CursorCoordinate c);
         DMToken::TokenType type;
         std::string value;
         uint32_t line;

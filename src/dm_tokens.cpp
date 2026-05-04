@@ -1,3 +1,9 @@
 #include "dm_tokens.hpp"
+#include "cursor_coordinates.hpp"
 
-DMToken::DMToken( DMToken::TokenType t, std::string v, uint32_t l, uint32_t c ) : type(t), value(v), line(l), column(c) {}
+DMToken::DMToken( DMToken::TokenType t, std::string v, CursorCoordinate c ) {
+    type = t;
+    value = v;
+    line = c.line;
+    column = c.column;
+}

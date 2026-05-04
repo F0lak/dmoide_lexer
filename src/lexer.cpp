@@ -85,7 +85,7 @@ std::string Lexer::scan(const std::string& source) {
 
     CursorCoordinate cursor_coord = get_cursor_coordinates(source.length());
     std::string fstring = "[NEWLINE L" + std::to_string(cursor_coord.line) + " C" + std::to_string(cursor_coord.column) + "]";
-    DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, fstring, cursor_coord.line, cursor_coord.column);
+    DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, fstring, cursor_coord);
     tokens.emplace_back(eof_token);
 
     for(const auto& t : tokens) {
