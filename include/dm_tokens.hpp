@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "cursor_coordinates.hpp"
 
 struct DMToken {
     public:
@@ -8,6 +9,8 @@ struct DMToken {
             IGNORE,
             END_OF_FILE,
             
+            IDENTIFIER,
+            KEYWORD,
             LABEL,
             NUMBER,
             WHITESPACE,
@@ -84,7 +87,8 @@ struct DMToken {
             OP_ASSIGN_BOOL_OR_INTO,
 
             };
-
+        
+        DMToken(CursorCoordinate c);
         DMToken( DMToken::TokenType t, std::string v,  CursorCoordinate c);
         DMToken::TokenType type;
         std::string value;

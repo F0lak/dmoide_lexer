@@ -1,6 +1,7 @@
 #include "lexer.hpp"
 #include <iostream>
 #include <array>
+#include <format>
 
 
 CursorCoordinate::CursorCoordinate(size_t l, size_t c)
@@ -78,18 +79,32 @@ std::string Lexer::scan(const std::string& source) {
             cursor_pos += token_result.characters_consumed;
             std::cout << "Moving cursor ahead " << token_result.characters_consumed << " columns\n";
         }
+
+        if(std::isalpha(current) || current == '_'){
+            std::cout << "Whitespace time\n";
+            auto* strategy = strategy_lookup[StrategyContext::Identifier];
+            std::cout << "Running Strategy\n";
+            TokenStrategyResult token_result = strategy->run(*this, source, cursor_pos);
+            std::cout << "Result: " << token_result.token.value << "\n";
+            tokens.emplace_back(token_result.token);
+            cursor_pos += token_result.characters_consumed;
+            std::cout << "Moving cursor ahead " << token_result.characters_consumed << " columns\n";
+        }
         else {
             cursor_pos++;
         }
     }
 
-    CursorCoordinate cursor_coord = get_cursor_coordinates(source.length());
-    std::string fstring = "[NEWLINE L" + std::to_string(cursor_coord.line) + " C" + std::to_string(cursor_coord.column) + "]";
-    DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, fstring, cursor_coord);
+    CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
+    DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, "EOF", cursor_coord);
     tokens.emplace_back(eof_token);
 
     for(const auto& t : tokens) {
-        result += t.value;
+        result += readable_token(t);
     }
     return result;
+}
+
+std::string Lexer::readable_token(DMToken token) {
+    return std::format("[{} L{} C{}]", token.value, token.line, token.column);
 }

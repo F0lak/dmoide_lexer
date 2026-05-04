@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(dm_open_ide VERSION 1.0)
 
 # 2. Specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 3. Include directories (so you don't have to use relative paths like ../include)

@@ -6,6 +6,7 @@
 void Lexer::initialize() {
     strategy_lookup = {
         {StrategyContext::Default, PlaceholderStrategy::instance()},
-        {StrategyContext::Whitespace, WhitespaceStrategy::instance()}
+        {StrategyContext::Whitespace, WhitespaceStrategy::instance()},
+        {StrategyContext::Identifier, IdentifierStrategy::instance()}
     };
 }

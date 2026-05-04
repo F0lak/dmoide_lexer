@@ -22,6 +22,7 @@ class Lexer {
         std::string scan(const std::string& source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
+        std::string readable_token(DMToken token);
 
         bool is_line_map_dirty = true;
         std::uint32_t cursor_pos = 0;
