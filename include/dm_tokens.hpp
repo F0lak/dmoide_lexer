@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
 
-
 struct DMToken {
     public:
-    
         enum class TokenType : uint16_t {
             PLACEHOLDER,
+            IGNORE,
+            END_OF_FILE,
             
             LABEL,
             NUMBER,
@@ -85,8 +85,9 @@ struct DMToken {
 
             };
 
-        TokenType type;
+        DMToken( DMToken::TokenType t, std::string v, uint32_t l, uint32_t c );
+        DMToken::TokenType type;
         std::string value;
+        uint32_t line;
+        uint32_t column;
     };
-
-struct DMTokenPlaceholder : public DMToken {};

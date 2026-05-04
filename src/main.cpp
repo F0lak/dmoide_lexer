@@ -7,6 +7,8 @@
 
 std::string newline_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/newline_test.dm";
 std::string token_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/token_test.dm";
+std::string operator_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/operators.dm";
+std::string milestone1_test_file = "C:/Users/F0lak/dm_open_ide/test_dm_files/keyword_test.dm";
 
 std::string load_file(const std::string& path) {
     std::ifstream file(path, std::ios::in | std::ios::binary);
@@ -23,14 +25,24 @@ std::string load_file(const std::string& path) {
 void test_run() {
     std::cout << "Current path is: " << std::filesystem::current_path() << std::endl;
     Lexer lexer;
-    std::string file_contents = load_file(token_test_file);
-    std::cout << "Token Result: " << lexer.scan(file_contents) << "\n";
+    std::string file_contents = load_file(milestone1_test_file);
+    lexer.set_source(file_contents);
+    std::cout << "Lexer Source set successfully\n";
+
+    std::string scan_result = lexer.scan(file_contents);
+    std::cout << "Scan Result: " << scan_result << "\n";
+    
+    std::cout << milestone1_test_file << " is " << file_contents.size() << " characters long\n";
+    std::cout << milestone1_test_file << " has " << lexer.line_map.size() << " lines\n";
 }
 
 void count_strategies(Lexer lexer) {
-    std::cout << "Lexer has " << lexer.strategy_lookup.size() << " TokenStrategies:\n";
-    for(size_t i = 0; i < lexer.strategy_lookup.size(); ++i) {
-        std::cout << "  Index[" << i << "]: " << lexer.strategy_lookup[i]->name() << "\n";
+    std::cout << "Lexer has " << Lexer::strategy_lookup.size() << " TokenStrategies:\n";
+
+    // Use a range-based for loop to iterate over the map
+    for (auto const& [context, strategy] : Lexer::strategy_lookup) {
+        // 'strategy' is the pointer to the instance
+        std::cout << "  Strategy: " << strategy->name() << "\n";
     }
 }
 
@@ -65,7 +77,7 @@ void lexer_test() {
 
 int main() {
     try {
-        lexer_test();
+        test_run();
         return 0;
     }
     catch(const std::exception& e) {
