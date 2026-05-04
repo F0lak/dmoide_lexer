@@ -19,6 +19,8 @@ TokenStrategyResult NumberStrategy::run(Lexer& lexer, const std::string& source,
 
     DMToken token = DMToken(DMToken::TokenType::NUMBER, "NUMBER: " + label, lexer.get_cursor_coordinates(pos));
 
+    dot_count = 0;
+    
     return TokenStrategyResult(token, label_length);
 };
 
