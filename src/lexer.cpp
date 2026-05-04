@@ -60,6 +60,33 @@ std::string Lexer::scan(const std::string& source) {
     while (cursor_pos < source.length()) {
         char current = source[cursor_pos];
 
+        // Escape Character '\'
+        if(current == '\\'){
+            if( cursor_pos + 2 < source.length() && 
+                source[cursor_pos + 1] == '\r' &&
+                source[cursor_pos + 2] == '\n'){
+               
+                    cursor_pos += 3;
+                    continue;
+                }
+
+            if( cursor_pos + 1 < source.length() &&
+                std::isalpha(source[cursor_pos + 1])){
+                    // path operator
+                    // pass off to operator strategy?
+                    // Sure
+                    // Will need to change this to Path strategy when that's implemented
+                    register_token(StrategyContext::Operator);
+                    continue;
+                }
+            
+            CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
+            DMToken error_token = DMToken(DMToken::TokenType::ERROR, "ERROR: Stray \\", cursor_coord);
+            tokens.emplace_back(error_token);
+            cursor_pos++;
+            continue;
+        }
+
         // Whitespace
         if(std::isspace(current)) {
             register_token(StrategyContext::Whitespace);

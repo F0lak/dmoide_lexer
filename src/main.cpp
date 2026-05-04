@@ -32,7 +32,7 @@ void test_run() {
     std::cout << "Lexer Source set successfully\n";
 
     std::string scan_result = lexer.scan(file_contents);
-    std::cout << "Scan Result: " << scan_result << "\n";
+    std::cout << "Scan Result:\n" << scan_result << "\n";
 
     std::cout << TEST_FILE << " is " << file_contents.size() << " characters long\n";
     std::cout << TEST_FILE << " has " << lexer.line_map.size() << " lines\n";

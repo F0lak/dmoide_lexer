@@ -1,4 +1,4 @@
-// Arithmetic & 
+// Arithmetic & \
 Assignment
 = += -= *= /= %=
 + - * / %
@@ -16,4 +16,4 @@ Assignment
 . : ? .? ?. /
 
 // Miscellaneous
-\ , [ ] ( ) { }
+, [
