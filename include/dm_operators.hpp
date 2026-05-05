@@ -58,10 +58,10 @@ namespace DMOperators {
         {",",   DMToken::TokenType::SEPARATOR},
         {"[",   DMToken::TokenType::OP_BRACKET_OPEN},
         {"]",   DMToken::TokenType::OP_BRACKET_CLOSE},
-        {"]",   DMToken::TokenType::OP_PAREN_OPEN},
-        {"]",   DMToken::TokenType::OP_PAREN_CLOSE},
-        {"]",   DMToken::TokenType::OP_CURLY_OPEN},
-        {"]",   DMToken::TokenType::OP_CURLY_CLOSE}
+        {"(",   DMToken::TokenType::OP_PAREN_OPEN},
+        {")",   DMToken::TokenType::OP_PAREN_CLOSE},
+        {"{",   DMToken::TokenType::OP_CURLY_OPEN},
+        {"}",   DMToken::TokenType::OP_CURLY_CLOSE}
     };
 
     // Returns the TokenType if found, otherwise returns a default (like IDENTIFIER)
