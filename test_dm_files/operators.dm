@@ -16,7 +16,7 @@ Assignment
 . : ? .? ?. /
 
 // Miscellaneous
-, [
+, [ ] ( ) { }
 
     /* Multi //
     Line\ *

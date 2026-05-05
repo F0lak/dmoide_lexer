@@ -30,8 +30,6 @@ enum class TokenType : uint16_t {
     OP_COLON_COLON, // this has multiple uses, will probably split into several tokens later
     OP_DOT_ACCESS,
     OP_COLON_ACCESS,
-    OP_INDEX_ACCESS,
-    OP_INDEX_ESCAPE,
     OP_NULL_COND_DOT,
     OP_NULL_COND_COLON,
     OP_NULL_COND_INDEX,
@@ -89,6 +87,13 @@ enum class TokenType : uint16_t {
     OP_ASSIGN_INTO,
     OP_ASSIGN_BOOL_AND_INTO,
     OP_ASSIGN_BOOL_OR_INTO,
+    
+    OP_BRACKET_OPEN,
+    OP_BRACKET_CLOSE,
+    OP_PAREN_OPEN,
+    OP_PAREN_CLOSE,
+    OP_CURLY_OPEN,
+    OP_CURLY_CLOSE,
 
     // Keywords
     KW_BREAK,

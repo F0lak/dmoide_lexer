@@ -56,8 +56,12 @@ namespace DMOperators {
 
         // Miscellaneous
         {",",   DMToken::TokenType::SEPARATOR},
-        {"[",   DMToken::TokenType::OP_INDEX_ACCESS},
-        {"]",   DMToken::TokenType::OP_INDEX_ESCAPE} // Usually handled as matching pair
+        {"[",   DMToken::TokenType::OP_BRACKET_OPEN},
+        {"]",   DMToken::TokenType::OP_BRACKET_CLOSE},
+        {"]",   DMToken::TokenType::OP_PAREN_OPEN},
+        {"]",   DMToken::TokenType::OP_PAREN_CLOSE},
+        {"]",   DMToken::TokenType::OP_CURLY_OPEN},
+        {"]",   DMToken::TokenType::OP_CURLY_CLOSE}
     };
 
     // Returns the TokenType if found, otherwise returns a default (like IDENTIFIER)
