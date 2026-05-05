@@ -44,7 +44,7 @@ CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     size_t line_index = std::distance(line_map.begin(), it);
     size_t column_index = pos;
     if(line_index > 0){
-        column_index = pos - line_map[line_index - 1];
+        column_index = pos - line_map[line_index - 1] + 1;
     }
     CursorCoordinate coordinates = { line_index, column_index };
 
