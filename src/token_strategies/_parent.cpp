@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include "token_strategies.hpp"
+#include "lexer.hpp"
 
 TokenStrategyResult::TokenStrategyResult(DMToken t, uint32_t d) : token(t), characters_consumed(d) {}
 
@@ -21,8 +22,8 @@ uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, st
         }
         
         TerminatorResult termination = is_terminated(source, peek_cursor_pos);
+        peek_cursor_pos += termination.size;
         if(termination.found == true){
-            peek_cursor_pos += termination.size;
             break;
         }
         else{

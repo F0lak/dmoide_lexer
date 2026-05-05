@@ -34,10 +34,16 @@ bool CommentMultilineStrategy::is_escape_character(char character) {
 
 TerminatorResult CommentMultilineStrategy::is_terminated(const std::string& source, int cursor_pos) {
     char character = source[cursor_pos];
-    if(character == '*'){
-        if(cursor_pos + 1 < source.length() && source[cursor_pos + 1] == '/'){
+    if( character == '*' &&\
+        cursor_pos + 1 < source.length() &&\
+        source[cursor_pos + 1] == '/' &&\
+        --stack_count == 0) {
             return TerminatorResult(true, 2);
-        }
+    }
+    if( character == '/' &&\
+        cursor_pos + 1 < source.length() &&\
+        source[cursor_pos + 1] == '*'){
+        stack_count++;
     }
     return TerminatorResult(false, 0);
 }

@@ -44,7 +44,18 @@ TOKEN_STRATEGY(WhitespaceStrategy)
 TOKEN_STRATEGY(IdentifierStrategy)
 TOKEN_STRATEGY(OperatorStrategy)
 TOKEN_STRATEGY(CommentInlineStrategy)
-TOKEN_STRATEGY(CommentMultilineStrategy)
+
+class CommentMultilineStrategy : public TokenStrategy { 
+    public: 
+        std::string name() const override; 
+        static CommentMultilineStrategy* instance(); 
+        TokenStrategyResult run(Lexer& lexer, const std::string& source, int pos) override; 
+    protected: 
+        bool is_escape_character(char c) override;
+        TerminatorResult is_terminated(const std::string& source, int cursor_pos) override;
+    private:
+        int stack_count = 0;
+};
 
 class NumberStrategy : public TokenStrategy { 
     public: 
