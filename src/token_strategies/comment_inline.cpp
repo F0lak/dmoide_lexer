@@ -11,14 +11,9 @@ std::string CommentInlineStrategy::name() const {
     return "CommentInlineStrategy";
 }
 
-CommentInlineStrategy* CommentInlineStrategy::instance() {
-    static CommentInlineStrategy instance;
-    return &instance;
-}
-
-TokenStrategyResult CommentInlineStrategy::run(Lexer& lexer, const std::string& source, int pos) {
-    int label_length = peek(source, pos);
-    std::string label = source.substr(pos, label_length);
+TokenStrategyResult CommentInlineStrategy::run(int pos) {
+    int label_length = peek(pos);
+    std::string label = lexer.source.substr(pos, label_length);
 
     DMToken token = DMToken(DMToken::TokenType::COMMENT_INLINE, "COMMENT_INLINE " + label, lexer.get_cursor_coordinates(pos));
 
@@ -35,7 +30,7 @@ bool CommentInlineStrategy::is_escape_character(char character) {
     return false;
 }
 
-ScanResult CommentInlineStrategy::scan(const std::string& source, int cursor_pos) {
-    char character = source[cursor_pos];
+ScanResult CommentInlineStrategy::scan(int cursor_pos) {
+    char character = lexer.source[cursor_pos];
     return ScanResult(is_escape_character(character), 0);
 }

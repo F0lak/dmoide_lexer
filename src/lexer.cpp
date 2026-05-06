@@ -37,7 +37,7 @@ void Lexer::count_lines() {
     is_line_map_dirty = false;
 }
 
-std::unordered_map<Lexer::StrategyContext, TokenStrategy*> Lexer::strategy_lookup;
+std::unordered_map<Lexer::StrategyContext, std::unique_ptr<TokenStrategy>> strategy_lookup;
 
 CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     auto it = std::upper_bound(line_map.begin(), line_map.end(), pos);
@@ -138,15 +138,27 @@ std::string Lexer::scan(const std::string& source) {
 
 // Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
 void Lexer::register_token(StrategyContext strat_context) {
-    auto* strategy = strategy_lookup[strat_context];
-    TokenStrategyResult result = strategy->run(*this, source, cursor_pos);
+    TokenStrategy* strategy = strategy_lookup[strat_context].get();
+    TokenStrategyResult result = strategy->run(cursor_pos);
 
     cursor_pos += result.characters_consumed;
 
     switch(result.token.type) {
         case DMToken::TokenType::IGNORE:
-        case DMToken::TokenType::WHITESPACE:
             return;
+
+        case DMToken::TokenType::WHITESPACE:
+            if(indentation.is_at_line_start == true){
+                result.token.type = DMToken::TokenType::INDENT;
+            }
+            break;
+
+        case DMToken::TokenType::INDENT:
+        case DMToken::TokenType::DEDENT:
+            break;
+
+        default:
+            indentation.is_at_line_start = false;
     }
 
     tokens.emplace_back(result.token);

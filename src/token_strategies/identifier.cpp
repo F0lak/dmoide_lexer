@@ -8,14 +8,9 @@ std::string IdentifierStrategy::name() const {
     return "IdentifierStrategy";
 }
 
-IdentifierStrategy* IdentifierStrategy::instance() {
-    static IdentifierStrategy instance;
-    return &instance;
-}
-
-TokenStrategyResult IdentifierStrategy::run(Lexer& lexer, const std::string& source, int pos) {
-    int label_length = peek(source, pos);
-    std::string label = source.substr(pos, label_length);
+TokenStrategyResult IdentifierStrategy::run(int pos) {
+    int label_length = peek(pos);
+    std::string label = lexer.source.substr(pos, label_length);
 
     DMToken token = DMToken(lexer.get_cursor_coordinates(pos));
     if(DMKeywords::is_keyword(label)){
@@ -43,7 +38,7 @@ bool IdentifierStrategy::is_escape_character(char character) {
     return true;
 }
 
-ScanResult IdentifierStrategy::scan(const std::string& source, int cursor_pos) {
-    char character = source[cursor_pos];
+ScanResult IdentifierStrategy::scan(int cursor_pos) {
+    char character = lexer.source[cursor_pos];
     return ScanResult(is_escape_character(character), 0);
 }

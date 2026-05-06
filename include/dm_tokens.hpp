@@ -21,6 +21,8 @@ enum class TokenType : uint16_t {
     IDENTIFIER,
     NEWLINE,
     SEPARATOR,
+    INDENT,
+    DEDENT,
 
     // TODO: Sort these based on order of operations as defined in: https://www.byond.com/docs/ref/#/operator
     NULL_OP, // Error case where an operator doesn't exist for some reason

@@ -8,14 +8,9 @@ std::string NumberStrategy::name() const {
     return "NumberStrategy";
 }
 
-NumberStrategy* NumberStrategy::instance() {
-    static NumberStrategy instance;
-    return &instance;
-}
-
-TokenStrategyResult NumberStrategy::run(Lexer& lexer, const std::string& source, int pos) {
-    int label_length = peek(source, pos);
-    std::string label = source.substr(pos, label_length);
+TokenStrategyResult NumberStrategy::run(int pos) {
+    int label_length = peek(pos);
+    std::string label = lexer.source.substr(pos, label_length);
 
     DMToken token = DMToken(DMToken::TokenType::NUMBER, "NUMBER: " + label, lexer.get_cursor_coordinates(pos));
     dot_count = 0;
@@ -34,7 +29,7 @@ bool NumberStrategy::is_escape_character(char character) {
     return true;
 }
 
-ScanResult NumberStrategy::scan(const std::string& source, int cursor_pos) {
-    char character = source[cursor_pos];
+ScanResult NumberStrategy::scan(int cursor_pos) {
+    char character = lexer.source[cursor_pos];
     return ScanResult(is_escape_character(character), 0);
 }

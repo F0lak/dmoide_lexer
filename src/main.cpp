@@ -40,10 +40,10 @@ void test_run() {
 }
 
 void count_strategies(Lexer lexer) {
-    std::cout << "Lexer has " << Lexer::strategy_lookup.size() << " TokenStrategies:\n";
+    std::cout << "Lexer has " << lexer.strategy_lookup.size() << " TokenStrategies:\n";
 
     // Use a range-based for loop to iterate over the map
-    for (auto const& [context, strategy] : Lexer::strategy_lookup) {
+    for (auto const& [context, strategy] : lexer.strategy_lookup) {
         // 'strategy' is the pointer to the instance
         std::cout << "  Strategy: " << strategy->name() << "\n";
     }

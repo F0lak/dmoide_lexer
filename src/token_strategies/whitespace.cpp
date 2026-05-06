@@ -7,15 +7,10 @@ std::string WhitespaceStrategy::name() const {
     return "WhitespaceStrategy";
 }
 
-WhitespaceStrategy* WhitespaceStrategy::instance() {
-    static WhitespaceStrategy instance;
-    return &instance;
-}
-
-TokenStrategyResult WhitespaceStrategy::run(Lexer& lexer, const std::string& source, int pos) {
-    char current = source[pos];
+TokenStrategyResult WhitespaceStrategy::run(int pos) {
+    char current = lexer.source[pos];
     if(current == '\r') {
-        uint32_t peek_dist = peek(source, pos);
+        uint32_t peek_dist = peek(pos);
         pos += peek_dist;
         CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
         DMToken new_token = DMToken( DMToken::TokenType::NEWLINE, "NEWLINE", coords);
@@ -28,7 +23,15 @@ TokenStrategyResult WhitespaceStrategy::run(Lexer& lexer, const std::string& sou
     }
     if(current == ' '){
         CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "WHITESPACE", coords);
+        DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "SPACE", coords);
+        return TokenStrategyResult(new_token, 1);
+    }
+    if(current == '\t'){
+        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
+        DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "TAB", coords);
+        // Once the IDE is configured to handle tabs, there needs to be a quick change here.
+        // coords.column needs to increment according to the visual tab size.
+        // But don't exchange it for space tokens, or that'll fuck on up the indentation parsing.
         return TokenStrategyResult(new_token, 1);
     }
     else {
@@ -48,7 +51,10 @@ bool WhitespaceStrategy::is_escape_character(char character) {
     return true;
 }
 
-ScanResult WhitespaceStrategy::scan(const std::string& source, int cursor_pos) {
-    char character = source[cursor_pos];
+ScanResult WhitespaceStrategy::scan(int cursor_pos) {
+    char character = lexer.source[cursor_pos];
+    if(!isspace(character)){
+
+    }
     return ScanResult(is_escape_character(character), 0);
 }
