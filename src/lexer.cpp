@@ -84,6 +84,18 @@ std::string Lexer::scan(const std::string& source) {
             continue;
         }
 
+        // Indentation
+        if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
+            register_token(StrategyContext::Indentation);
+            continue;
+        }
+
+        // Curly Braces
+        if((current == '{' || current == '}')){
+            register_token(StrategyContext::CurlyBrace);
+            continue;
+        }
+
         // Whitespace
         if(std::isspace(current)) {
             register_token(StrategyContext::Whitespace);
@@ -157,6 +169,11 @@ void Lexer::register_token(StrategyContext strat_context) {
         case DMToken::TokenType::DEDENT:
             break;
 
+            
+        case DMToken::TokenType::NEWLINE:
+            indentation.is_at_line_start = true;
+            break;
+
         default:
             indentation.is_at_line_start = false;
     }
@@ -168,8 +185,10 @@ std::string Lexer::readable_token(DMToken token) {
     if(token.type == DMToken::TokenType::IGNORE){
         return "";
     }
-    if(token.type == DMToken::TokenType::NEWLINE){
-        return "\n";
-    }
-    return std::format("[{} L{} C{}]\n", token.value, token.line, token.column);
+
+    std::string result = std::format("[{} L{} C{}]\n", token.value, token.line, token.column);
+    
+  //  std::cout << result;
+    //std::cin.get();
+    return result;
 }

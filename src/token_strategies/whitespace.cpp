@@ -29,11 +29,8 @@ TokenStrategyResult WhitespaceStrategy::run(int pos) {
     if(current == '\t'){
         CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
         DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "TAB", coords);
-        // Once the IDE is configured to handle tabs, there needs to be a quick change here.
-        // coords.column needs to increment according to the visual tab size.
-        // But don't exchange it for space tokens, or that'll fuck on up the indentation parsing.
         return TokenStrategyResult(new_token, 1);
-    }
+        }
     else {
         CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
         DMToken new_token = DMToken( DMToken::TokenType::IGNORE, "IGNORE", coords);
@@ -53,8 +50,5 @@ bool WhitespaceStrategy::is_escape_character(char character) {
 
 ScanResult WhitespaceStrategy::scan(int cursor_pos) {
     char character = lexer.source[cursor_pos];
-    if(!isspace(character)){
-
-    }
     return ScanResult(is_escape_character(character), 0);
 }

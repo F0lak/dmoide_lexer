@@ -57,6 +57,8 @@ TOKEN_STRATEGY(WhitespaceStrategy)
 TOKEN_STRATEGY(IdentifierStrategy)
 TOKEN_STRATEGY(OperatorStrategy)
 TOKEN_STRATEGY(CommentInlineStrategy)
+TOKEN_STRATEGY(IndentationStrategy)
+TOKEN_STRATEGY(CurlyBraceStrategy)
 
 class CommentMultilineStrategy : public TokenStrategy { 
     public: 

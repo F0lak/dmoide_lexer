@@ -1,10 +1,6 @@
-proc/foo() {var/bar}
-
 proc
   foo()
-    var/bar
+    var/a
+  var/bar
 
-proc/foo()
-    {
-    var bar
-    }
+{curly{braces}here}

@@ -22,7 +22,9 @@ class Lexer {
             Operator,
             CommentInline,
             CommentMultiline,
-            Number
+            Number,
+            Indentation,
+            CurlyBrace
         };
 
         Lexer();
