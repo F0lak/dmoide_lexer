@@ -34,7 +34,7 @@ bool NumberStrategy::is_escape_character(char character) {
     return true;
 }
 
-TerminatorResult NumberStrategy::is_terminated(const std::string& source, int cursor_pos) {
+ScanResult NumberStrategy::scan(const std::string& source, int cursor_pos) {
     char character = source[cursor_pos];
-    return TerminatorResult(is_escape_character(character), 0);
+    return ScanResult(is_escape_character(character), 0);
 }

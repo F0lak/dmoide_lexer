@@ -21,6 +21,6 @@ TokenStrategyResult PlaceholderStrategy::run(Lexer& lexer, const std::string& so
     return { token, 1 };
 }
 
-TerminatorResult PlaceholderStrategy::is_terminated(const std::string& source, int cursor_pos) {
-    return TerminatorResult(true, 0);
+ScanResult PlaceholderStrategy::scan(const std::string& source, int cursor_pos) {
+    return ScanResult(true, 0);
 }

@@ -5,7 +5,7 @@
 
 TokenStrategyResult::TokenStrategyResult(DMToken t, uint32_t d) : token(t), characters_consumed(d) {}
 
-TerminatorResult::TerminatorResult(bool f, int s) : found(f), size(s) {}
+ScanResult::ScanResult(bool terminated, int steps_forward) : terminate_scan(terminated), steps(steps_forward) {}
 
 uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, std::optional<int> max_steps) {
     int peek_cursor_pos = cursor_start_pos;
@@ -21,9 +21,9 @@ uint32_t TokenStrategy::peek(const std::string& source, int cursor_start_pos, st
                 }
         }
         
-        TerminatorResult termination = is_terminated(source, peek_cursor_pos);
-        peek_cursor_pos += termination.size;
-        if(termination.found == true){
+        ScanResult result = scan(source, peek_cursor_pos);
+        peek_cursor_pos += result.steps;
+        if(result.terminate_scan == true){
             break;
         }
         else{

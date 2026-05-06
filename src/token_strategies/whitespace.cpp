@@ -48,7 +48,7 @@ bool WhitespaceStrategy::is_escape_character(char character) {
     return true;
 }
 
-TerminatorResult WhitespaceStrategy::is_terminated(const std::string& source, int cursor_pos) {
+ScanResult WhitespaceStrategy::scan(const std::string& source, int cursor_pos) {
     char character = source[cursor_pos];
-    return TerminatorResult(is_escape_character(character), 0);
+    return ScanResult(is_escape_character(character), 0);
 }
