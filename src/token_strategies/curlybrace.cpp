@@ -17,19 +17,14 @@ std::string CurlyBraceStrategy::name() const {
 
 TokenStrategyResult CurlyBraceStrategy::run(int pos) {
     char current = lexer.source[pos];
-    CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-    DMToken new_token = DMToken(coords);
 
     if(current == '{') {
-        new_token.type = DMToken::TokenType::INDENT;
-        new_token.value = "INDENT";
+        return result(DMToken::TokenType::INDENT, "INDENT", pos, 1);
     }
 
-    if(current == '}'){
-        new_token.type = DMToken::TokenType::DEDENT;
-        new_token.value = "DEDENT";
+    else if(current == '}'){
+        return result(DMToken::TokenType::DEDENT, "DEDENT", pos, 1);
     }
-    return TokenStrategyResult(new_token, 1);
 };
 
 bool CurlyBraceStrategy::is_escape_character(char character) {

@@ -12,17 +12,12 @@ TokenStrategyResult IdentifierStrategy::run(int pos) {
     int label_length = peek(pos);
     std::string label = lexer.source.substr(pos, label_length);
 
-    DMToken token = DMToken(lexer.get_cursor_coordinates(pos));
     if(DMKeywords::is_keyword(label)){
-        token.type = DMKeywords::mapping.at(label);
-        token.value = "KEYWORD: " + label;
+        return result(DMKeywords::mapping.at(label), "KEYWORD: " + label, pos, label_length);
     }
     else {
-        token.type = DMToken::TokenType::IDENTIFIER;
-        token.value = "IDENTIFIER: " + label;
+        return result(DMToken::TokenType::IDENTIFIER, "IDENTIFIER: " + label, pos, label_length);
     }
-
-    return TokenStrategyResult(token, label_length);
 };
 
 bool IdentifierStrategy::is_escape_character(char character) {

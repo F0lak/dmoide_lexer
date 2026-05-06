@@ -133,6 +133,12 @@ std::string Lexer::scan(const std::string& source) {
             continue;
         }
 
+        // Strings
+        if(current == '"'){
+            register_token(StrategyContext::String);
+            continue;
+        }
+
         else {
             cursor_pos++;
         }

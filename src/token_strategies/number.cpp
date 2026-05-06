@@ -12,9 +12,8 @@ TokenStrategyResult NumberStrategy::run(int pos) {
     int label_length = peek(pos);
     std::string label = lexer.source.substr(pos, label_length);
 
-    DMToken token = DMToken(DMToken::TokenType::NUMBER, "NUMBER: " + label, lexer.get_cursor_coordinates(pos));
     dot_count = 0;
-    return TokenStrategyResult(token, label_length);
+    return result(DMToken::TokenType::NUMBER, "NUMBER: " + label, pos, label_length);
 };
 
 bool NumberStrategy::is_escape_character(char character) {

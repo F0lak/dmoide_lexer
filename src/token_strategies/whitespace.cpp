@@ -12,29 +12,19 @@ TokenStrategyResult WhitespaceStrategy::run(int pos) {
     if(current == '\r') {
         uint32_t peek_dist = peek(pos);
         pos += peek_dist;
-        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        DMToken new_token = DMToken( DMToken::TokenType::NEWLINE, "NEWLINE", coords);
-        return TokenStrategyResult(new_token, peek_dist);
+        return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, peek_dist);
     }
     if(current == ';') {
-        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        DMToken new_token = DMToken( DMToken::TokenType::NEWLINE, "NEWLINE", coords);
-        return TokenStrategyResult(new_token, 1);
+        return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
     }
     if(current == ' '){
-        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "SPACE", coords);
-        return TokenStrategyResult(new_token, 1);
+        return result(DMToken::TokenType::WHITESPACE, "SPACE", pos, 1);
     }
     if(current == '\t'){
-        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        DMToken new_token = DMToken( DMToken::TokenType::WHITESPACE, "TAB", coords);
-        return TokenStrategyResult(new_token, 1);
+        return result(DMToken::TokenType::WHITESPACE, "TAB", pos, 1);
         }
     else {
-        CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-        DMToken new_token = DMToken( DMToken::TokenType::IGNORE, "IGNORE", coords);
-        return TokenStrategyResult(new_token, 1);
+        return result(DMToken::TokenType::IGNORE, "IGNORE", pos, 1);
     }
 };
 

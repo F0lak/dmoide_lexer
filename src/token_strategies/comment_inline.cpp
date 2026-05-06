@@ -15,12 +15,11 @@ TokenStrategyResult CommentInlineStrategy::run(int pos) {
     int label_length = peek(pos);
     std::string label = lexer.source.substr(pos, label_length);
 
-    DMToken token = DMToken(DMToken::TokenType::COMMENT_INLINE, "COMMENT_INLINE " + label, lexer.get_cursor_coordinates(pos));
-
     if(label_length == 0){
         label_length = 1;
     }
-    return TokenStrategyResult(token, label_length);
+    
+    return result(DMToken::TokenType::COMMENT_INLINE, "COMMENT_INLINE " + label, pos, label_length);
 };
 
 bool CommentInlineStrategy::is_escape_character(char character) {
