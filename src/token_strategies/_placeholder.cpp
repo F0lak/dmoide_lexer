@@ -11,9 +11,7 @@ bool PlaceholderStrategy::is_escape_character(char c) {
 }
 
 TokenStrategyResult PlaceholderStrategy::run(int pos) {
-    CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-    DMToken token = DMToken(DMToken::TokenType::PLACEHOLDER, "PLACEHOLDER", coords);
-    return { token, 1 };
+    return result(DMToken::TokenType::PLACEHOLDER, "PLACEHOLDER", pos, 1);
 }
 
 ScanResult PlaceholderStrategy::scan(int cursor_pos) {

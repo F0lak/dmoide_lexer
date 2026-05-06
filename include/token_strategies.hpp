@@ -39,6 +39,7 @@ class TokenStrategy {
         // Returns a ScanResult that determines whether the peek() function should end and how far fowrard to
         // step the cursor in order to tokenize the terminator properly
         virtual ScanResult scan(int cursor_pos) = 0;
+        TokenStrategyResult result(DMToken::TokenType type, std::string value, int pos, int length);
 };
 
 #define TOKEN_STRATEGY(StratName) \
@@ -59,6 +60,7 @@ TOKEN_STRATEGY(OperatorStrategy)
 TOKEN_STRATEGY(CommentInlineStrategy)
 TOKEN_STRATEGY(IndentationStrategy)
 TOKEN_STRATEGY(CurlyBraceStrategy)
+TOKEN_STRATEGY(StringStrategy)
 
 class CommentMultilineStrategy : public TokenStrategy { 
     public: 

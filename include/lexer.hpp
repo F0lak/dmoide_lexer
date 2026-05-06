@@ -24,7 +24,8 @@ class Lexer {
             CommentMultiline,
             Number,
             Indentation,
-            CurlyBrace
+            CurlyBrace,
+            String
         };
 
         Lexer();
