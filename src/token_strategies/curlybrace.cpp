@@ -25,6 +25,9 @@ TokenStrategyResult CurlyBraceStrategy::run(int pos) {
     else if(current == '}'){
         return result(DMToken::TokenType::DEDENT, "DEDENT", pos, 1);
     }
+    // Error token, something went wrong.
+    //(8 is the Strategy Lookup index for Curly Brace tokens)
+    return result(DMToken::TokenType::ERROR, "TOKEN_ERROR_8", pos, 1);
 };
 
 bool CurlyBraceStrategy::is_escape_character(char character) {

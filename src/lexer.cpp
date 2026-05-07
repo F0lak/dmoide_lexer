@@ -15,7 +15,6 @@ Lexer::Lexer() {
     std::cout << "Lexer Initialized\n";
 }
 
-
 void Lexer::set_source(std::string new_source) {
     source = std::move(new_source);
     is_line_map_dirty = true;
@@ -90,6 +89,18 @@ std::string Lexer::scan(const std::string& source) {
             continue;
         }
 
+        // Multiline Strings
+        if(cursor_pos+1 < source.length() && current == '{' && source[cursor_pos+1] == '"'){
+            register_token(StrategyContext::StringMultiLine);
+            continue;
+        }
+
+        // Strings
+        if(current == '"'){
+            register_token(StrategyContext::String);
+            continue;
+        }
+
         // Curly Braces
         if((current == '{' || current == '}')){
             register_token(StrategyContext::CurlyBrace);
@@ -133,12 +144,7 @@ std::string Lexer::scan(const std::string& source) {
             continue;
         }
 
-        // Strings
-        if(current == '"'){
-            register_token(StrategyContext::String);
-            continue;
-        }
-
+        // Nothing here to tokenize.  Move on with our life.
         else {
             cursor_pos++;
         }

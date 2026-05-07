@@ -61,6 +61,7 @@ TOKEN_STRATEGY(CommentInlineStrategy)
 TOKEN_STRATEGY(IndentationStrategy)
 TOKEN_STRATEGY(CurlyBraceStrategy)
 TOKEN_STRATEGY(StringStrategy)
+TOKEN_STRATEGY(StringMultilineStrategy)
 
 class CommentMultilineStrategy : public TokenStrategy { 
     public: 

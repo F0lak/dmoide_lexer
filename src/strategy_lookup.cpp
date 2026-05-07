@@ -22,4 +22,5 @@ void Lexer::initialize() {
     strategy_lookup.emplace(StrategyContext::Indentation,       std::make_unique<IndentationStrategy>(*this));
     strategy_lookup.emplace(StrategyContext::CurlyBrace,        std::make_unique<CurlyBraceStrategy>(*this));
     strategy_lookup.emplace(StrategyContext::String,            std::make_unique<StringStrategy>(*this));
+    strategy_lookup.emplace(StrategyContext::StringMultiLine,   std::make_unique<StringMultilineStrategy>(*this));
 }

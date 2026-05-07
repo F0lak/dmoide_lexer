@@ -21,8 +21,8 @@ uint32_t TokenStrategy::peek(int cursor_start_pos, std::optional<int> max_steps)
                     peek_cursor_pos += 3;
                     continue;
                 }
-            else if(peek_cursor_pos + 1 < lexer.source.length()){
-                peek_cursor_pos++;
+            else if(peek_cursor_pos + 2 < lexer.source.length()){
+                peek_cursor_pos += 2;
             }
         }
         

@@ -25,7 +25,8 @@ class Lexer {
             Number,
             Indentation,
             CurlyBrace,
-            String
+            String,
+            StringMultiLine
         };
 
         Lexer();
