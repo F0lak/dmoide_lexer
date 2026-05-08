@@ -23,4 +23,6 @@ void Lexer::initialize() {
     strategy_lookup.emplace(StrategyContext::CurlyBrace,        std::make_unique<CurlyBraceStrategy>(*this));
     strategy_lookup.emplace(StrategyContext::String,            std::make_unique<StringStrategy>(*this));
     strategy_lookup.emplace(StrategyContext::StringMultiLine,   std::make_unique<StringMultilineStrategy>(*this));
+    strategy_lookup.emplace(StrategyContext::StringEmbed,       std::make_unique<StringEmbedStrategy>(*this));
+    strategy_lookup.emplace(StrategyContext::Error,             std::make_unique<ErrorStrategy>(*this));
 }

@@ -10,10 +10,11 @@ std::string WhitespaceStrategy::name() const {
 TokenStrategyResult WhitespaceStrategy::run(int pos) {
     char current = lexer.source[pos];
     switch(current){
-        case '\r':
+        case '\r': {
             uint32_t peek_dist = peek(pos);
             pos += peek_dist;
             return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, peek_dist);
+        }
         case ';':
             return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
         case ' ':

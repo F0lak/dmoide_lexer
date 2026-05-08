@@ -18,12 +18,15 @@ enum class TokenType : uint16_t {
     
     // Misc
     STRING,
+    STRING_MULTILINE,
     NUMBER,
     IDENTIFIER,
     NEWLINE,
     SEPARATOR,
     INDENT,
     DEDENT,
+    EMBED_OPEN,
+    EMBED_CLOSE,
 
     // TODO: Sort these based on order of operations as defined in: https://www.byond.com/docs/ref/#/operator
     NULL_OP, // Error case where an operator doesn't exist for some reason

@@ -13,6 +13,16 @@ struct IndentationStack {
     int last_line_count = 0;
 };
 
+struct StringStack {
+    enum class Context {
+        NoContext,
+        Inline,
+        Multiline
+    };
+    Context context = Context::NoContext;
+    int depth = 0;
+};
+
 class Lexer {
     public:
         enum class StrategyContext {
@@ -26,20 +36,25 @@ class Lexer {
             Indentation,
             CurlyBrace,
             String,
-            StringMultiLine
+            StringMultiLine,
+            StringEmbed,
+            Error
         };
 
         Lexer();
         static Lexer& instance();
         void initialize();
+        void register_error(std::string message, int pos);
         void set_source(std::string new_source);
         std::string scan(const std::string& source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
-        void register_token(StrategyContext strat_context);
+        void run_strategy(StrategyContext strat_context);
+        void register_token(TokenStrategyResult result);
         std::string readable_token(DMToken token);
 
         IndentationStack indentation = IndentationStack();
+        StringStack string_stack = StringStack();
         bool is_line_map_dirty = true;
         std::uint32_t cursor_pos = 0;
         std::string source; // The string given to the lexer

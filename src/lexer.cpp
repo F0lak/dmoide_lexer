@@ -72,7 +72,7 @@ std::string Lexer::scan(const std::string& source) {
             if( cursor_pos + 1 < source.length() &&
                 std::isalpha(source[cursor_pos + 1])){
                     // Will need to change this to Path strategy when that's implemented
-                    register_token(StrategyContext::Operator);
+                    run_strategy(StrategyContext::Operator);
                     continue;
                 }
             
@@ -85,37 +85,55 @@ std::string Lexer::scan(const std::string& source) {
 
         // Indentation
         if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
-            register_token(StrategyContext::Indentation);
+            run_strategy(StrategyContext::Indentation);
             continue;
         }
 
         // Multiline Strings
         if(cursor_pos+1 < source.length() && current == '{' && source[cursor_pos+1] == '"'){
-            register_token(StrategyContext::StringMultiLine);
+            run_strategy(StrategyContext::StringMultiLine);
             continue;
         }
 
         // Strings
         if(current == '"'){
-            register_token(StrategyContext::String);
+            run_strategy(StrategyContext::String);
+            continue;
+        }
+        if(string_stack.depth > 0 && current == ']'){
+            run_strategy(StrategyContext::StringEmbed);
+            switch(string_stack.context){
+                case StringStack::Context::Inline:
+                    run_strategy(StrategyContext::String);
+                    break;
+                case StringStack::Context::Multiline:
+                    run_strategy(StrategyContext::StringMultiLine);
+                    break;
+                default:
+                    register_error("sting_stack has No Context: " + std::to_string(static_cast<int>(string_stack.context)), cursor_pos);
+                    break;
+            }
+            if(string_stack.depth == 0){
+                string_stack.context = StringStack::Context::NoContext;
+                }
             continue;
         }
 
         // Curly Braces
         if((current == '{' || current == '}')){
-            register_token(StrategyContext::CurlyBrace);
+            run_strategy(StrategyContext::CurlyBrace);
             continue;
         }
 
         // Whitespace
         if(std::isspace(current)) {
-            register_token(StrategyContext::Whitespace);
+            run_strategy(StrategyContext::Whitespace);
             continue;
         }
 
         // Identifiers and Keywords
         if(std::isalpha(current) || current == '_'){
-            register_token(StrategyContext::Identifier);
+            run_strategy(StrategyContext::Identifier);
             continue;
         }
 
@@ -123,24 +141,24 @@ std::string Lexer::scan(const std::string& source) {
         if(current == '/'){
             char next = source[cursor_pos + 1];
             if(next == '/'){
-                register_token(StrategyContext::CommentInline);
+                run_strategy(StrategyContext::CommentInline);
                 continue;
             }
             if(next == '*'){
-                register_token(StrategyContext::CommentMultiline);
+                run_strategy(StrategyContext::CommentMultiline);
                 continue;
             }
         }
        
         // Operators
         if(DMOperators::is_operator(current)){
-            register_token(StrategyContext::Operator);
+            run_strategy(StrategyContext::Operator);
             continue;
         }
 
         // Numbers
         if(std::isdigit(current)){
-            register_token(StrategyContext::Number);
+            run_strategy(StrategyContext::Number);
             continue;
         }
 
@@ -160,11 +178,15 @@ std::string Lexer::scan(const std::string& source) {
     return result;
 }
 
-// Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
-void Lexer::register_token(StrategyContext strat_context) {
+// Runs a strategy for the given context
+void Lexer::run_strategy(StrategyContext strat_context){
     TokenStrategy* strategy = strategy_lookup[strat_context].get();
     TokenStrategyResult result = strategy->run(cursor_pos);
+    register_token(result);
+}
 
+// Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
+void Lexer::register_token(TokenStrategyResult result) {
     cursor_pos += result.characters_consumed;
 
     switch(result.token.type) {
@@ -181,6 +203,12 @@ void Lexer::register_token(StrategyContext strat_context) {
         case DMToken::TokenType::DEDENT:
             break;
 
+        case DMToken::TokenType::EMBED_OPEN:
+            string_stack.depth++;
+            break;
+        case DMToken::TokenType::EMBED_CLOSE:
+            string_stack.depth--;
+            break;
             
         case DMToken::TokenType::NEWLINE:
             indentation.is_at_line_start = true;
@@ -203,4 +231,11 @@ std::string Lexer::readable_token(DMToken token) {
   //  std::cout << result;
     //std::cin.get();
     return result;
+}
+
+void Lexer::register_error(std::string message, int pos){
+    CursorCoordinate coords = get_cursor_coordinates(pos);
+    DMToken new_token = DMToken(DMToken::TokenType::ERROR, "TOKEN_ERROR: " + message, coords);
+    tokens.emplace_back(new_token);
+    cursor_pos++;
 }
