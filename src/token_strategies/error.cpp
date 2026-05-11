@@ -12,7 +12,7 @@ bool ErrorStrategy::is_escape_character(char c) {
 
 TokenStrategyResult ErrorStrategy::run(int pos) {
     // unhandled error
-    return result(DMToken::TokenType::ERROR, "TOKEN_ERROR_-1", pos, 1);
+    return result(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR_-1", pos, 1);
 }
 
 ScanResult ErrorStrategy::scan(int cursor_pos) {

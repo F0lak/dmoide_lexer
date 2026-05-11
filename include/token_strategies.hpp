@@ -65,6 +65,8 @@ TOKEN_STRATEGY(StringMultilineStrategy)
 TOKEN_STRATEGY(StringEmbedStrategy)
 TOKEN_STRATEGY(ErrorStrategy)
 
+#undef TOKEN_STRATEGY
+
 class CommentMultilineStrategy : public TokenStrategy { 
     public: 
         using TokenStrategy::TokenStrategy;

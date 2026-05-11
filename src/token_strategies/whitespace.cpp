@@ -18,11 +18,11 @@ TokenStrategyResult WhitespaceStrategy::run(int pos) {
         case ';':
             return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
         case ' ':
-            return result(DMToken::TokenType::WHITESPACE, "SPACE", pos, 1);
+            return result(DMToken::TokenType::TOKEN_WHITESPACE, "SPACE", pos, 1);
         case '\t':
-            return result(DMToken::TokenType::WHITESPACE, "TAB", pos, 1);
+            return result(DMToken::TokenType::TOKEN_WHITESPACE, "TAB", pos, 1);
         default:
-            return result(DMToken::TokenType::IGNORE, "IGNORE", pos, 1);
+            return result(DMToken::TokenType::TOKEN_IGNORE, "TOKEN_IGNORE", pos, 1);
     }
 };
 

@@ -16,7 +16,7 @@ TokenStrategyResult StringStrategy::run(int pos) {
     }
     switch(lexer.source[pos+1+label_length]){
         case '\n':
-            return result(DMToken::TokenType::ERROR, "ERROR: unterminated string", pos, label_length); // might want to append a newline here as well? maybe
+            return result(DMToken::TokenType::TOKEN_ERROR, "ERROR: unterminated string", pos, label_length); // might want to append a newline here as well? maybe
         case '[':
             // special case where we need to register both the closed string and the embed open
             // because the lexer isn't aware yet that it's in an embedded expression until the embed open is registered

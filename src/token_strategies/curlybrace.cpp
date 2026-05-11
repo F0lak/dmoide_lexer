@@ -27,7 +27,7 @@ TokenStrategyResult CurlyBraceStrategy::run(int pos) {
     }
     // Error token, something went wrong.
     //(8 is the Strategy Lookup index for Curly Brace tokens)
-    return result(DMToken::TokenType::ERROR, "TOKEN_ERROR_8", pos, 1);
+    return result(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR_8", pos, 1);
 };
 
 bool CurlyBraceStrategy::is_escape_character(char character) {

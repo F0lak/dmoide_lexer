@@ -77,7 +77,7 @@ std::string Lexer::scan(const std::string& source) {
                 }
             
             CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
-            DMToken error_token = DMToken(DMToken::TokenType::ERROR, "ERROR: Stray \\", cursor_coord);
+            DMToken error_token = DMToken(DMToken::TokenType::TOKEN_ERROR, "ERROR: Stray \\", cursor_coord);
             tokens.emplace_back(error_token);
             cursor_pos++;
             continue;
@@ -185,15 +185,15 @@ void Lexer::run_strategy(StrategyContext strat_context){
     register_token(result);
 }
 
-// Handles registering tokens to the tokens list and handles special cases (ie: IGNORE)
+// Handles registering tokens to the tokens list and handles special cases (ie: TOKEN_IGNORE)
 void Lexer::register_token(TokenStrategyResult result) {
     cursor_pos += result.characters_consumed;
 
     switch(result.token.type) {
-        case DMToken::TokenType::IGNORE:
+        case DMToken::TokenType::TOKEN_IGNORE:
             return;
 
-        case DMToken::TokenType::WHITESPACE:
+        case DMToken::TokenType::TOKEN_WHITESPACE:
             if(indentation.is_at_line_start == true){
                 result.token.type = DMToken::TokenType::INDENT;
             }
@@ -222,7 +222,7 @@ void Lexer::register_token(TokenStrategyResult result) {
 }
 
 std::string Lexer::readable_token(DMToken token) {
-    if(token.type == DMToken::TokenType::IGNORE){
+    if(token.type == DMToken::TokenType::TOKEN_IGNORE){
         return "";
     }
 
@@ -235,7 +235,7 @@ std::string Lexer::readable_token(DMToken token) {
 
 void Lexer::register_error(std::string message, int pos){
     CursorCoordinate coords = get_cursor_coordinates(pos);
-    DMToken new_token = DMToken(DMToken::TokenType::ERROR, "TOKEN_ERROR: " + message, coords);
+    DMToken new_token = DMToken(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR: " + message, coords);
     tokens.emplace_back(new_token);
     cursor_pos++;
 }

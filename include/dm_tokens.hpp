@@ -7,12 +7,12 @@ struct DMToken {
 enum class TokenType : uint16_t {
     PLACEHOLDER,
     END_OF_FILE,
-    ERROR,
+    TOKEN_ERROR,
 
     // These tokens are discarded by the lexer before passing it to the parser
     // They exist to classify discarded text for debugging and maybe syntax highlighting
-    IGNORE,
-    WHITESPACE,
+    TOKEN_IGNORE,
+    TOKEN_WHITESPACE,
     COMMENT_INLINE,
     COMMENT_MULTILINE,
     

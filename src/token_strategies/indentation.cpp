@@ -28,7 +28,7 @@ TokenStrategyResult IndentationStrategy::run(int pos) {
             }
             lexer.indentation.last_line_count = lexer.indentation.current_count;
             lexer.indentation.current_count = 0;
-            DMToken discard_token = DMToken(DMToken::TokenType::IGNORE, "IGNORE", coords);
+            DMToken discard_token = DMToken(DMToken::TokenType::TOKEN_IGNORE, "TOKEN_IGNORE", coords);
             return TokenStrategyResult(discard_token, 1);
         }
 

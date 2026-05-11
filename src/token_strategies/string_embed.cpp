@@ -14,7 +14,7 @@ TokenStrategyResult StringEmbedStrategy::run(int pos) {
         case ']':
             return result(DMToken::TokenType::EMBED_CLOSE, "EMBED_CLOSE", pos, 1);
         default:
-            return result(DMToken::TokenType::ERROR, "TOKEN_ERROR_11", pos, 1);
+            return result(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR_11", pos, 1);
     }
 };
 
