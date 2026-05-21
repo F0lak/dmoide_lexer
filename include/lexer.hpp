@@ -42,10 +42,9 @@ class Lexer {
         };
 
         Lexer();
-        static Lexer& instance();
         void initialize();
         void register_error(std::string message, int pos);
-        void set_source(std::string new_source);
+        void set_source(std::string& new_source);
         std::string scan(const std::string& source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
