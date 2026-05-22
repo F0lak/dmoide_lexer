@@ -2,6 +2,33 @@
 #include "ilexer_interface.hpp"
 #include "cursor_coordinates.hpp"
 
+struct IndentationStack {
+    bool is_at_line_start = false;
+    int current_count = 0;
+    int last_line_count = 0;
+
+    void clear() {
+        is_at_line_start = false;
+        current_count = 0;
+        last_line_count = 0;
+    }
+};
+
+struct StringStack {
+    enum class Context {
+        NoContext,
+        Inline,
+        Multiline
+    };
+    Context context = Context::NoContext;
+    int depth = 0;
+
+    void clear() {
+        context = Context::NoContext;
+        depth = 0;
+    }
+};
+
 class Lexer : public ILexerInterface {
     friend class TokenStrategy;
     friend class PlaceholderStrategy;
@@ -52,14 +79,15 @@ class Lexer : public ILexerInterface {
         void run_strategy(StrategyContext strat_context);
         void register_token(TokenStrategyResult result);
         std::string readable_token(DMToken token);
+        
+        std::unordered_map<StrategyContext, std::unique_ptr<TokenStrategy>> strategy_lookup;
 
+        // these are reset every time tokenize() is ran
+        std::string source; // The string given to the lexer
         IndentationStack indentation = IndentationStack();
         StringStack string_stack = StringStack();
         std::vector<DMToken> tokens;    // All of the tokens that have been generated
         std::vector<size_t> line_map;  //list of lines in the file, where the number stored is the cursor position at the beginning of the line.
-        std::unordered_map<StrategyContext, std::unique_ptr<TokenStrategy>> strategy_lookup;
-        std::string source; // The string given to the lexer
-        std::string current_dm_path = "";
         int indents = 0;
         bool is_line_map_dirty = true;
         std::uint32_t cursor_pos = 0;

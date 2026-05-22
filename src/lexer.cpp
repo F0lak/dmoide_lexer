@@ -59,8 +59,12 @@ LexerData Lexer::tokenize(const std::string& source) {
     std::cout << "Lexer is scanning string\n";
     std::cout << "String length is: " << source.length() << "\n";
     std::string result = "";
+
+    indentation.clear();
+    string_stack.clear();
+    tokens.clear();
+    indents = 0;
     cursor_pos = 0;
-    
 
     uint32_t last_pos = 42; // We'll start this in a random position to kick start the loop.
     while (cursor_pos < source.length()) {
