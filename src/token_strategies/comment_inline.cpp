@@ -26,6 +26,9 @@ bool CommentInlineStrategy::is_escape_character(char character) {
     if(character == '\r'){
         return true;
     }
+    if(character == '\n'){
+        return true;
+    }
     return false;
 }
 

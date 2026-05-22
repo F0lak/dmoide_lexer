@@ -75,14 +75,9 @@ LexerData Lexer::tokenize(const std::string& source) {
         char current = source[cursor_pos];
 
         if (cursor_pos == 0) {
-        std::cout << "LEXER INTERNAL CHECK AT 0: '" << current << "' (ASCII: " << (int)current << ")\n";
         }
-
-        std::string fstring = std::format("Cursor Pos is: {} | '{}'.\n", cursor_pos, current);
-
         // Escape Character '\'
         if(current == '\\'){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             if( cursor_pos + 2 < source.length() && 
                 source[cursor_pos + 1] == '\r' &&
                 source[cursor_pos + 2] == '\n'){
@@ -107,14 +102,12 @@ LexerData Lexer::tokenize(const std::string& source) {
 
         // Indentation
         if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::Indentation);
             continue;
         }
 
         // Multiline Strings
         if(cursor_pos+1 < source.length() && current == '{' && source[cursor_pos+1] == '"'){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::StringMultiLine);
             continue;
         }
@@ -122,11 +115,9 @@ LexerData Lexer::tokenize(const std::string& source) {
         // Strings
         if(current == '"'){
             run_strategy(StrategyContext::String);
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             continue;
         }
         if(string_stack.depth > 0 && current == ']'){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::StringEmbed);
             switch(string_stack.context){
                 case StringStack::Context::Inline:
@@ -147,28 +138,24 @@ LexerData Lexer::tokenize(const std::string& source) {
 
         // Curly Braces
         if((current == '{' || current == '}')){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::CurlyBrace);
             continue;
         }
 
         // Whitespace
         if(std::isspace(current)) {
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::Whitespace);
             continue;
         }
 
         // Identifiers and Keywords
         if(std::isalpha(current) || current == '_'){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::Identifier);
             continue;
         }
 
         // Comments
         if(current == '/'){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             char next = source[cursor_pos + 1];
             if(next == '/'){
                 run_strategy(StrategyContext::CommentInline);
@@ -182,14 +169,12 @@ LexerData Lexer::tokenize(const std::string& source) {
        
         // Operators
         if(DMOperators::is_operator(current)){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::Operator);
             continue;
         }
 
         // Numbers
         if(std::isdigit(current)){
-            std::cout << "[" << __FILE__ << ":" << __LINE__ << " in " << __func__ << "] Debug trace.\n";
             run_strategy(StrategyContext::Number);
             continue;
         }
@@ -207,6 +192,8 @@ LexerData Lexer::tokenize(const std::string& source) {
     for(const auto& t : tokens) {
         result += readable_token(t);
     }
+    
+    lex_data.error = LEXError::ErrorCode::LEXError_OK;
     lex_data.data_string = std::move(result);
     return lex_data;
 }
@@ -220,8 +207,8 @@ void Lexer::run_strategy(StrategyContext strat_context){
 
 // Handles registering tokens to the tokens list and handles special cases (ie: TOKEN_IGNORE)
 void Lexer::register_token(TokenStrategyResult result) {
-    std::string msg = std::format("Token Type {}, Characters Consumed {}\n", static_cast<int>(result.token.type), result.characters_consumed);
-    std::cout << msg;
+//    std::string msg = std::format("Token Type {}, Characters Consumed {}\n", static_cast<int>(result.token.type), result.characters_consumed);
+//    std::cout << msg;
     cursor_pos += result.characters_consumed;
 
     switch(result.token.type) {
