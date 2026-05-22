@@ -2,7 +2,23 @@
 #include "ilexer_interface.hpp"
 #include "cursor_coordinates.hpp"
 
-class Lexer : ILexerInterface {
+class Lexer : public ILexerInterface {
+    friend class TokenStrategy;
+    friend class PlaceholderStrategy;
+    friend class WhitespaceStrategy;
+    friend class IdentifierStrategy;
+    friend class OperatorStrategy;
+    friend class CommentInlineStrategy;
+    friend class IndentationStrategy;
+    friend class CurlyBraceStrategy;
+    friend class StringStrategy;
+    friend class StringMultilineStrategy;
+    friend class StringEmbedStrategy;
+    friend class ErrorStrategy;
+    friend class CommentMultilineStrategy;
+    friend class NumberStrategy;
+    friend struct TokenStrategyResult;
+
     public:
         enum class StrategyContext {
             Default,
@@ -22,7 +38,10 @@ class Lexer : ILexerInterface {
 
         Lexer();
 
-        std::string tokenize(const std::string& source) override;
+        LexerData tokenize(const std::string& source) override;
+
+        uint32_t line_count();
+        uint32_t strategy_count();
 
     private:
         void initialize();

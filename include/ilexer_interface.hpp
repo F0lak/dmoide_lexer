@@ -24,13 +24,13 @@ struct StringStack {
 };
 
 struct LexerData {
-    std::string token_data = "";
-    LEXError error;
+    std::string data_string = "";
+    LEXError::ErrorCode error;
 };
 
 class ILexerInterface {
     public:
         virtual ~ILexerInterface() = default;
 
-        virtual std::string tokenize(const std::string& source) = 0;
+        virtual LexerData tokenize(const std::string& source) = 0;
 };

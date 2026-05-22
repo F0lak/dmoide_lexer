@@ -51,8 +51,10 @@ CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     return coordinates;
 }
 
-std::string Lexer::tokenize(const std::string& source) {
+LexerData Lexer::tokenize(const std::string& source) {
     set_source(source);
+
+    LexerData lex_data;
 
     std::cout << "Lexer is scanning string\n";
     std::cout << "String length is: " << source.length() << "\n";
@@ -205,7 +207,8 @@ std::string Lexer::tokenize(const std::string& source) {
     for(const auto& t : tokens) {
         result += readable_token(t);
     }
-    return result;
+    lex_data.data_string = std::move(result);
+    return lex_data;
 }
 
 // Runs a strategy for the given context
@@ -270,4 +273,12 @@ void Lexer::register_error(std::string message, int pos){
     DMToken new_token = DMToken(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR: " + message, coords);
     tokens.emplace_back(new_token);
     cursor_pos++;
+}
+
+uint32_t Lexer::line_count() {
+    return line_map.size();
+}
+
+uint32_t strategy_count() {
+    return strategy_lookup.size();
 }
