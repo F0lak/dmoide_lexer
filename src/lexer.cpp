@@ -192,7 +192,7 @@ LexerData Lexer::tokenize(const std::string& source) {
     for(const auto& t : tokens) {
         result += readable_token(t);
     }
-    
+
     lex_data.error = LEXError::ErrorCode::LEXError_OK;
     lex_data.data_string = std::move(result);
     return lex_data;
@@ -248,7 +248,10 @@ std::string Lexer::readable_token(DMToken token) {
         return "";
     }
 
-    std::string result = std::format("[{} L{} C{}]\n", token.value, token.line, token.column);
+    std::string result = std::format("[{} L{} C{}]", token.value, token.line, token.column);
+    if(token.type == DMToken::TokenType::NEWLINE){
+        result += '\n';
+    }
     
   //  std::cout << result;
     //std::cin.get();
