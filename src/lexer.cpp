@@ -199,6 +199,8 @@ LexerData Lexer::tokenize(const std::string& source) {
 
     lex_data.error = LEXError::ErrorCode::LEXError_OK;
     lex_data.data_string = std::move(result);
+    lex_data.line_count = line_count();
+    lex_data.token_count = tokens.size();
     return lex_data;
 }
 

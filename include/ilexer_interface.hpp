@@ -10,6 +10,8 @@
 struct LexerData {
     std::string data_string = "";
     LEXError::ErrorCode error;
+    int line_count = 0;
+    int token_count = 0;
 };
 
 class ILexerInterface {
