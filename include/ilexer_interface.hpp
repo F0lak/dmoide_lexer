@@ -18,5 +18,5 @@ class ILexerInterface {
     public:
         virtual ~ILexerInterface() = default;
 
-        virtual LexerData tokenize(const std::string& source) = 0;
+        virtual LexerData tokenize(std::string_view source) = 0;
 };

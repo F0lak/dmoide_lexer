@@ -10,7 +10,7 @@ std::string StringStrategy::name() const {
 TokenStrategyResult StringStrategy::run(int pos) {
     // pos+1 here accounts for and skips over the opening "
     int label_length = peek(pos+1);
-    std::string label = lexer.source.substr(pos+1, label_length);
+    std::string_view label = lexer.source.substr(pos+1, label_length);
     if(label_length <= 0){
         label_length = 1;
     }
@@ -20,11 +20,11 @@ TokenStrategyResult StringStrategy::run(int pos) {
         case '[':
             // special case where we need to register both the closed string and the embed open
             // because the lexer isn't aware yet that it's in an embedded expression until the embed open is registered
-            lexer.register_token(result(DMToken::TokenType::STRING, "STRING: " + label, pos, 0));
+            lexer.register_token(result(DMToken::TokenType::STRING, label, pos, 0));
             lexer.string_stack.context = StringStack::Context::Inline;
             return result(DMToken::TokenType::EMBED_OPEN, "EMBED_OPEN", pos+label_length+1, label_length+2); // label_length + 2 accounts for the open " and the closing [
         default:
-            return result(DMToken::TokenType::STRING, "STRING: " + label, pos, label_length+2); // label_length + 2 accounts for the open and closing "
+            return result(DMToken::TokenType::STRING, label, pos, label_length+2); // label_length + 2 accounts for the open and closing "
     }
 };
 

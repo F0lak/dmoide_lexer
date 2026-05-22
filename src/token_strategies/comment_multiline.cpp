@@ -13,13 +13,13 @@ std::string CommentMultilineStrategy::name() const {
 
 TokenStrategyResult CommentMultilineStrategy::run(int pos) {
     int label_length = peek(pos);
-    std::string label = lexer.source.substr(pos, label_length);
+    std::string_view label = lexer.source.substr(pos, label_length);
 
     if(label_length == 0){
         label_length = 1;
     }
 
-    return result(DMToken::TokenType::COMMENT_MULTILINE, "COMMENT_MULTI_LINE " + label, pos, label_length);
+    return result(DMToken::TokenType::COMMENT_MULTILINE, label, pos, label_length);
 };
 
 bool CommentMultilineStrategy::is_escape_character(char character) {

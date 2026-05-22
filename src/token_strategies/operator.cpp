@@ -10,17 +10,17 @@ std::string OperatorStrategy::name() const {
 
 TokenStrategyResult OperatorStrategy::run(int pos) {
     int label_length = peek(pos);
-    std::string label = lexer.source.substr(pos, label_length);
+    std::string_view label = lexer.source.substr(pos, label_length);
 
     if(label_length == 0){
         label_length = 1;
     }
 
     if(DMOperators::is_operator(label)){
-        return result(DMOperators::mapping.at(label), "OPERATOR: " + label, pos, label_length);
+        return result(DMOperators::mapping.at(label), label, pos, label_length);
     }
     else {
-        return result(DMToken::TokenType::NULL_OP, "NULL_OPERATOR: " + label, pos, label_length);
+        return result(DMToken::TokenType::NULL_OP, label, pos, label_length);
     }
 };
 

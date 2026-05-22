@@ -65,7 +65,7 @@ class Lexer : public ILexerInterface {
 
         Lexer();
 
-        LexerData tokenize(const std::string& source) override;
+        LexerData tokenize(std::string_view source) override;
 
         uint32_t line_count();
         uint32_t strategy_count();
@@ -73,7 +73,7 @@ class Lexer : public ILexerInterface {
     private:
         void initialize();
         void register_error(std::string message, int pos);
-        void set_source(const std::string& new_source);
+        void set_source(std::string_view new_source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
         void run_strategy(StrategyContext strat_context);
@@ -83,7 +83,7 @@ class Lexer : public ILexerInterface {
         std::unordered_map<StrategyContext, std::unique_ptr<TokenStrategy>> strategy_lookup;
 
         // these are reset every time tokenize() is ran
-        std::string source; // The string given to the lexer
+        std::string_view source; // The string given to the lexer
         IndentationStack indentation = IndentationStack();
         StringStack string_stack = StringStack();
         std::vector<DMToken> tokens;    // All of the tokens that have been generated

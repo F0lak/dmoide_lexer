@@ -15,7 +15,7 @@ Lexer::Lexer() {
     std::cout << "Lexer Initialized\n";
 }
 
-void Lexer::set_source(const std::string& new_source) {
+void Lexer::set_source(std::string_view new_source) {
     source = new_source; //std::move(new_source);
     is_line_map_dirty = true;
     count_lines();
@@ -51,7 +51,7 @@ CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     return coordinates;
 }
 
-LexerData Lexer::tokenize(const std::string& source) {
+LexerData Lexer::tokenize(std::string_view source) {
     set_source(source);
 
     LexerData lex_data;
@@ -68,18 +68,8 @@ LexerData Lexer::tokenize(const std::string& source) {
 
     uint32_t last_pos = 42; // We'll start this in a random position to kick start the loop.
     while (cursor_pos < source.length()) {
-    /*
-        if(cursor_pos == last_pos){
-            throw std::runtime_error("Lexer stuck at position " + std::to_string(cursor_pos));
-            //register_error("Internal Lexer Error: Stuck", cursor_pos);
-            cursor_pos++;
-        }
-        last_pos = cursor_pos;
-        */
         char current = source[cursor_pos];
 
-        if (cursor_pos == 0) {
-        }
         // Escape Character '\'
         if(current == '\\'){
             if( cursor_pos + 2 < source.length() && 

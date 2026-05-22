@@ -10,7 +10,7 @@ DMToken::DMToken(CursorCoordinate c) {
 }
 
 // Used when the whole Token context is known at instantiation
-DMToken::DMToken( DMToken::TokenType t, std::string v, CursorCoordinate c ) {
+DMToken::DMToken( DMToken::TokenType t, std::string_view v, CursorCoordinate c ) {
     type = t;
     value = v;
     line = c.line;

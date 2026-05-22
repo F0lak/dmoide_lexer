@@ -10,13 +10,13 @@ std::string IdentifierStrategy::name() const {
 
 TokenStrategyResult IdentifierStrategy::run(int pos) {
     int label_length = peek(pos);
-    std::string label = lexer.source.substr(pos, label_length);
+    std::string_view label = lexer.source.substr(pos, label_length);
 
     if(DMKeywords::is_keyword(label)){
-        return result(DMKeywords::mapping.at(label), "KEYWORD: " + label, pos, label_length);
+        return result(DMKeywords::mapping.at(label), label, pos, label_length);
     }
     else {
-        return result(DMToken::TokenType::IDENTIFIER, "IDENTIFIER: " + label, pos, label_length);
+        return result(DMToken::TokenType::IDENTIFIER, label, pos, label_length);
     }
 };
 
