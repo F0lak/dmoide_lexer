@@ -15,7 +15,7 @@ Lexer::Lexer() {
     std::cout << "Lexer Initialized\n";
 }
 
-void Lexer::set_source(std::string& new_source) {
+void Lexer::set_source(const std::string& new_source) {
     source = new_source; //std::move(new_source);
     is_line_map_dirty = true;
     count_lines();
@@ -51,12 +51,9 @@ CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     return coordinates;
 }
 
-std::string Lexer::scan(const std::string& source) {
-    if(source.empty()){
-        throw std::runtime_error("Didn't set Lexer source before running scan.");
-        return "";
-        // honestly should probably just set the source here always anyways?
-    }
+std::string Lexer::tokenize(const std::string& source) {
+    set_source(source);
+
     std::cout << "Lexer is scanning string\n";
     std::cout << "String length is: " << source.length() << "\n";
     std::string result = "";
