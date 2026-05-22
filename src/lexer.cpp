@@ -183,15 +183,19 @@ LexerData Lexer::tokenize(std::string_view source) {
     DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, "EOF", cursor_coord);
     tokens.emplace_back(eof_token); // register this immediately since it's known to be EOF
 
-    for(const auto& t : tokens) {
-        result += readable_token(t);
-    }
-
     lex_data.error = LEXError::ErrorCode::LEXError_OK;
-    lex_data.data_string = std::move(result);
+    lex_data.data_string = "No Token Data.  Call get_formatted_tokens() to build data string.";
     lex_data.line_count = line_count();
     lex_data.token_count = tokens.size();
     return lex_data;
+}
+
+std::string Lexer::get_formatted_tokens() {
+    std::string result = "";
+    for(const auto& t : tokens) {
+        result += readable_token(t);
+    }
+    return result;
 }
 
 // Runs a strategy for the given context

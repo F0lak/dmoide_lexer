@@ -66,6 +66,7 @@ class Lexer : public ILexerInterface {
         Lexer();
 
         LexerData tokenize(std::string_view source) override;
+        std::string get_formatted_tokens() override;
 
         uint32_t line_count();
         uint32_t strategy_count();
