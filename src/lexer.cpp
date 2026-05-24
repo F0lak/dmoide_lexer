@@ -37,7 +37,7 @@ void Lexer::count_lines() {
     is_line_map_dirty = false;
 }
 
-std::unordered_map<Lexer::StrategyContext, std::unique_ptr<TokenStrategy>> strategy_lookup;
+std::unordered_map<Lexer::StrategyContext, std::unique_ptr<ITokenStrategy>> strategy_lookup;
 
 CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     auto it = std::upper_bound(line_map.begin(), line_map.end(), pos);
@@ -199,7 +199,7 @@ std::string Lexer::get_formatted_tokens() {
 
 // Runs a strategy for the given context
 void Lexer::run_strategy(StrategyContext strat_context){
-    TokenStrategy* strategy = strategy_lookup[strat_context].get();
+    ITokenStrategy* strategy = strategy_lookup[strat_context].get();
     TokenStrategyResult result = strategy->run(cursor_pos);
     register_token(result);
 }

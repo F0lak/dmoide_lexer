@@ -31,7 +31,7 @@ struct StringStack {
 };
 
 class Lexer : public ILexerInterface {
-    friend class TokenStrategy;
+    template <typename Derived> friend class TokenStrategy;
     friend class PlaceholderStrategy;
     friend class WhitespaceStrategy;
     friend class IdentifierStrategy;
@@ -86,7 +86,7 @@ class Lexer : public ILexerInterface {
         void register_token(TokenStrategyResult result);
         std::string readable_token(DMToken token);
         
-        std::unordered_map<StrategyContext, std::unique_ptr<TokenStrategy>> strategy_lookup;
+        std::unordered_map<StrategyContext, std::unique_ptr<ITokenStrategy>> strategy_lookup;
 
         // these are reset every time tokenize() is ran
         std::string_view source; // The string given to the lexer
