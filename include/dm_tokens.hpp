@@ -142,6 +142,7 @@ struct DMToken {
 
         DMToken::TokenType type;
         uint32_t value_index;
+        uint32_t offset;
         uint16_t line;
         uint16_t column;
 

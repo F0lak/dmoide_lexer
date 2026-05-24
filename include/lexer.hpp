@@ -61,7 +61,8 @@ class Lexer : public ILexerInterface {
             String,
             StringMultiLine,
             StringEmbed,
-            Error
+            Error,
+            Count
         };
 
         Lexer();
@@ -70,7 +71,6 @@ class Lexer : public ILexerInterface {
         std::string get_formatted_tokens() override;
 
         uint32_t line_count();
-        uint32_t strategy_count();
 
         uint32_t get_token_value_count() override;
 
@@ -85,8 +85,9 @@ class Lexer : public ILexerInterface {
         void run_strategy(StrategyContext strat_context);
         void register_token(TokenStrategyResult result);
         std::string readable_token(DMToken token);
+        void coorindate(DMToken token);
         
-        std::unordered_map<StrategyContext, std::unique_ptr<ITokenStrategy>> strategy_lookup;
+        std::array<std::unique_ptr<ITokenStrategy>, static_cast<size_t>(StrategyContext::Count)> strategy_lookup;
 
         // these are reset every time tokenize() is ran
         std::string_view source; // The string given to the lexer
