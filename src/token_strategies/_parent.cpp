@@ -41,7 +41,9 @@ uint32_t TokenStrategy::peek(int cursor_start_pos, std::optional<int> max_steps)
 }
 
 TokenStrategyResult TokenStrategy::result(DMToken::TokenType type, std::string_view value, int pos, int length) {
-    CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-    DMToken new_token = DMToken(type, value, coords);
-    return TokenStrategyResult(new_token, length);
+    return TokenStrategyResult(new_token(type, value, pos), length);
+}
+
+DMToken TokenStrategy::new_token(DMToken::TokenType type, std::string_view value, int pos) {
+    return DMToken(type, lexer.interner.intern_string(value), lexer.get_cursor_coordinates(pos));
 }

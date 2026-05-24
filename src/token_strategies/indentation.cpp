@@ -10,8 +10,7 @@ std::string IndentationStrategy::name() const {
 
 TokenStrategyResult IndentationStrategy::run(int pos) {
     int indent_count = peek(pos);
-    CursorCoordinate coords = lexer.get_cursor_coordinates(pos);
-    DMToken indent_token = DMToken( DMToken::TokenType::INDENT, "INDENT", coords);
+    DMToken indent_token = new_token( DMToken::TokenType::INDENT, "INDENT", pos);
 
     if( lexer.source.length() > pos && \
         !isspace(lexer.source[pos+1]))
@@ -22,13 +21,13 @@ TokenStrategyResult IndentationStrategy::run(int pos) {
             if(difference > 0){
                 for (int i = difference; i > 0; --i){
                     pos++;
-                    DMToken dedent_token = DMToken(DMToken::TokenType::DEDENT, "DEDENT", coords);
+                    DMToken dedent_token = new_token(DMToken::TokenType::DEDENT, "DEDENT", pos); // more easy optimization opportunities
                     lexer.tokens.emplace_back(dedent_token);
                 }
             }
             lexer.indentation.last_line_count = lexer.indentation.current_count;
             lexer.indentation.current_count = 0;
-            DMToken discard_token = DMToken(DMToken::TokenType::TOKEN_IGNORE, "TOKEN_IGNORE", coords);
+            DMToken discard_token = new_token(DMToken::TokenType::TOKEN_IGNORE, "TOKEN_IGNORE", pos);
             return TokenStrategyResult(discard_token, 1);
         }
 

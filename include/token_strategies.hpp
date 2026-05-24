@@ -40,6 +40,7 @@ class TokenStrategy {
         // step the cursor in order to tokenize the terminator properly
         virtual ScanResult scan(int cursor_pos) = 0;
         TokenStrategyResult result(DMToken::TokenType type, std::string_view value, int pos, int length);
+        DMToken new_token(DMToken::TokenType type, std::string_view value, int pos);
 };
 
 #define TOKEN_STRATEGY(StratName) \

@@ -20,4 +20,6 @@ class ILexerInterface {
 
         virtual LexerData tokenize(std::string_view source) = 0;
         virtual std::string get_formatted_tokens() = 0;
+
+        virtual uint32_t get_token_value_count() = 0;
 };

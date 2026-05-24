@@ -13,6 +13,7 @@ Lexer::Lexer() {
     std::cout << "Lexer Constructor\n";
     this->initialize();
     std::cout << "Lexer Initialized\n";
+    interner.reserve(5000);
 }
 
 void Lexer::set_source(std::string_view new_source) {
@@ -60,13 +61,12 @@ LexerData Lexer::tokenize(std::string_view source) {
     std::cout << "String length is: " << source.length() << "\n";
     std::string result = "";
 
+    indents = 0;
+    cursor_pos = 0;
     indentation.clear();
     string_stack.clear();
     tokens.clear();
-    indents = 0;
-    cursor_pos = 0;
 
-    uint32_t last_pos = 42; // We'll start this in a random position to kick start the loop.
     while (cursor_pos < source.length()) {
         char current = source[cursor_pos];
 
@@ -88,7 +88,7 @@ LexerData Lexer::tokenize(std::string_view source) {
                 }
             
             CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
-            DMToken error_token = DMToken(DMToken::TokenType::TOKEN_ERROR, "ERROR: Stray \\", cursor_coord);
+            DMToken error_token = DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("ERROR: Stray \\"), cursor_coord);
             tokens.emplace_back(error_token);
             cursor_pos++;
             continue;
@@ -180,7 +180,7 @@ LexerData Lexer::tokenize(std::string_view source) {
     }
 
     CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
-    DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, "EOF", cursor_coord);
+    DMToken eof_token = DMToken(DMToken::TokenType::END_OF_FILE, interner.intern_string("EOF"), cursor_coord);
     tokens.emplace_back(eof_token); // register this immediately since it's known to be EOF
 
     lex_data.error = LEXError::ErrorCode::LEXError_OK;
@@ -248,7 +248,7 @@ std::string Lexer::readable_token(DMToken token) {
         return "";
     }
 
-    std::string result = std::format("[{} L{} C{}]", token.value, token.line, token.column);
+    std::string result = std::format("[{} L{} C{}]", token.value_index, token.line, token.column);
     if(token.type == DMToken::TokenType::NEWLINE){
         result += '\n';
     }
@@ -260,7 +260,7 @@ std::string Lexer::readable_token(DMToken token) {
 
 void Lexer::register_error(std::string message, int pos){
     CursorCoordinate coords = get_cursor_coordinates(pos);
-    DMToken new_token = DMToken(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR: " + message, coords);
+    DMToken new_token = DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("TOKEN_ERROR: " + message), coords);
     tokens.emplace_back(new_token);
     cursor_pos++;
 }
@@ -271,4 +271,8 @@ uint32_t Lexer::line_count() {
 
 uint32_t strategy_count() {
     return strategy_lookup.size();
+}
+
+uint32_t Lexer::get_token_value_count() {
+    return interner.size();
 }

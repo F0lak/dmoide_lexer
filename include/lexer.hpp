@@ -1,6 +1,7 @@
 #pragma once
 #include "ilexer_interface.hpp"
 #include "cursor_coordinates.hpp"
+#include "string_internment.hpp"
 
 struct IndentationStack {
     bool is_at_line_start = false;
@@ -71,7 +72,11 @@ class Lexer : public ILexerInterface {
         uint32_t line_count();
         uint32_t strategy_count();
 
+        uint32_t get_token_value_count() override;
+
     private:
+        StringInterner interner;
+
         void initialize();
         void register_error(std::string message, int pos);
         void set_source(std::string_view new_source);
