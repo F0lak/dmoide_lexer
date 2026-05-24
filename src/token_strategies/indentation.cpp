@@ -9,6 +9,7 @@ std::string IndentationStrategy::name() const {
 }
 
 TokenStrategyResult IndentationStrategy::run(int pos) {
+    ZoneScoped;
     int indent_count = peek(pos);
     DMToken indent_token = new_token( DMToken::TokenType::INDENT, "INDENT", pos);
 

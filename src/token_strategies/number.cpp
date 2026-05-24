@@ -9,6 +9,7 @@ std::string NumberStrategy::name() const {
 }
 
 TokenStrategyResult NumberStrategy::run(int pos) {
+    ZoneScoped;
     int label_length = peek(pos);
     std::string_view label = lexer.source.substr(pos, label_length);
 

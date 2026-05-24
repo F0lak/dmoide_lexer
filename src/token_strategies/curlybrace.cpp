@@ -16,6 +16,7 @@ std::string CurlyBraceStrategy::name() const {
 */
 
 TokenStrategyResult CurlyBraceStrategy::run(int pos) {
+    ZoneScoped;
     char current = lexer.source[pos];
 
     if(current == '{') {

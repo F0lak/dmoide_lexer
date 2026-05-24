@@ -12,6 +12,7 @@ std::string CommentInlineStrategy::name() const {
 }
 
 TokenStrategyResult CommentInlineStrategy::run(int pos) {
+    ZoneScoped;
     int label_length = peek(pos);
     std::string_view label = lexer.source.substr(pos, label_length);
 

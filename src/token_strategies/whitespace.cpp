@@ -8,6 +8,7 @@ std::string WhitespaceStrategy::name() const {
 }
 
 TokenStrategyResult WhitespaceStrategy::run(int pos) {
+    ZoneScoped;
     char current = lexer.source[pos];
     switch(current){
         case '\r': {

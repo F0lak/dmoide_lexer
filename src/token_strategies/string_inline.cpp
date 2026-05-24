@@ -8,6 +8,7 @@ std::string StringStrategy::name() const {
 }
 
 TokenStrategyResult StringStrategy::run(int pos) {
+    ZoneScoped;
     // pos+1 here accounts for and skips over the opening "
     int label_length = peek(pos+1);
     std::string_view label = lexer.source.substr(pos+1, label_length);

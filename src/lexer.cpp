@@ -51,6 +51,8 @@ CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
 }
 
 LexerData Lexer::tokenize(std::string_view source) {
+    ZoneScoped;
+
     set_source(source);
 
     LexerData lex_data;
@@ -71,6 +73,7 @@ LexerData Lexer::tokenize(std::string_view source) {
 
         // Escape Character '\'
         if(current == '\\'){
+            ZoneScopedN("Escape Character Read");
             if( cursor_pos + 2 < source.length() && 
                 source[cursor_pos + 1] == '\r' &&
                 source[cursor_pos + 2] == '\n'){
@@ -94,22 +97,26 @@ LexerData Lexer::tokenize(std::string_view source) {
 
         // Indentation
         if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
+            ZoneScopedN("Indentation Read");
             run_strategy(StrategyContext::Indentation);
             continue;
         }
 
         // Multiline Strings
         if(cursor_pos+1 < source.length() && current == '{' && source[cursor_pos+1] == '"'){
+            ZoneScopedN("Multiline String Read");
             run_strategy(StrategyContext::StringMultiLine);
             continue;
         }
 
         // Strings
         if(current == '"'){
+            ZoneScopedN("String Read");
             run_strategy(StrategyContext::String);
             continue;
         }
         if(string_stack.depth > 0 && current == ']'){
+            ZoneScopedN("String Stack Read");
             run_strategy(StrategyContext::StringEmbed);
             switch(string_stack.context){
                 case StringStack::Context::Inline:
@@ -130,24 +137,28 @@ LexerData Lexer::tokenize(std::string_view source) {
 
         // Curly Braces
         if((current == '{' || current == '}')){
+            ZoneScopedN("Curly Read");
             run_strategy(StrategyContext::CurlyBrace);
             continue;
         }
 
         // Whitespace
         if(std::isspace(current)) {
+            ZoneScopedN("Whitespace Read");
             run_strategy(StrategyContext::Whitespace);
             continue;
         }
 
         // Identifiers and Keywords
         if(std::isalpha(current) || current == '_'){
+            ZoneScopedN("Identifier Read");
             run_strategy(StrategyContext::Identifier);
             continue;
         }
 
         // Comments
         if(current == '/'){
+            ZoneScopedN("Comment Read");
             char next = source[cursor_pos + 1];
             if(next == '/'){
                 run_strategy(StrategyContext::CommentInline);
@@ -161,18 +172,21 @@ LexerData Lexer::tokenize(std::string_view source) {
        
         // Operators
         if(DMOperators::is_operator(current)){
+            ZoneScopedN("Operator Read");
             run_strategy(StrategyContext::Operator);
             continue;
         }
 
         // Numbers
         if(std::isdigit(current)){
+            ZoneScopedN("Number Read");
             run_strategy(StrategyContext::Number);
             continue;
         }
 
         // Nothing here to tokenize.  Move on with our life.
         else {
+            ZoneScopedN("Nothing Happened");
             cursor_pos++;
         }
     }

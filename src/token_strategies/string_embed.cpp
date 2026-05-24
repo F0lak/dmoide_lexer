@@ -8,6 +8,7 @@ std::string StringEmbedStrategy::name() const {
 }
 
 TokenStrategyResult StringEmbedStrategy::run(int pos) {
+    ZoneScoped;
     switch(lexer.source[pos]){
         case '[':
             return result(DMToken::TokenType::EMBED_OPEN, "EMBED_OPEN", pos, 1);

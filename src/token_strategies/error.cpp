@@ -11,6 +11,7 @@ bool ErrorStrategy::is_escape_character(char c) {
 }
 
 TokenStrategyResult ErrorStrategy::run(int pos) {
+    ZoneScoped;
     // unhandled error
     return result(DMToken::TokenType::TOKEN_ERROR, "TOKEN_ERROR_-1", pos, 1);
 }

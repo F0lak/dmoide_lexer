@@ -8,6 +8,7 @@ std::string StringMultilineStrategy::name() const {
 }
 
 TokenStrategyResult StringMultilineStrategy::run(int pos) {
+    ZoneScoped;
     int label_length = peek(pos+2);
     std::string label = "";
     if(label_length <= 0){
