@@ -1,4 +1,6 @@
 #pragma once
+#include <variant>
+#include <array>
 #include "ilexer_interface.hpp"
 #include "cursor_coordinates.hpp"
 #include "string_internment.hpp"
@@ -29,6 +31,20 @@ struct StringStack {
         depth = 0;
     }
 };
+
+using StrategyVariant = std::variant<
+    PlaceholderStrategy,
+    WhitespaceStrategy,
+    IdentifierStrategy,
+    OperatorStrategy,
+    CommentInlineStrategy,
+    IndentationStrategy,
+    CurlyBraceStrategy,
+    StringStrategy,
+    StringMultilineStrategy,
+    StringEmbedStrategy,
+    ErrorStrategy
+>;
 
 class Lexer : public ILexerInterface {
     template <typename Derived> friend class TokenStrategy;
@@ -87,7 +103,7 @@ class Lexer : public ILexerInterface {
         std::string readable_token(DMToken token);
         void coorindate(DMToken token);
         
-        std::array<std::unique_ptr<ITokenStrategy>, static_cast<size_t>(StrategyContext::Count)> strategy_lookup;
+        std::array<StrategyVariant, static_cast<size_t>(StrategyContext::Count)> strategy_lookup;
 
         // these are reset every time tokenize() is ran
         std::string_view source; // The string given to the lexer

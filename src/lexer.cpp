@@ -188,6 +188,7 @@ LexerData Lexer::tokenize(std::string_view source) {
 }
 
 void Lexer::coorindate(DMToken token) {
+    // will need to add logic here to generate cursor coordinates after tokenization
 }
 
 std::string Lexer::get_formatted_tokens() {
