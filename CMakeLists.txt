@@ -12,7 +12,7 @@ add_library(lib_lexer ${LIB_SOURCES})
 target_include_directories(lib_lexer PUBLIC include)
 target_include_directories(lib_lexer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/tracy/public")
 
-target_compile_definitions(lib_lexer PRIVATE TRACY_ENABLE)
+target_compile_definitions(lib_lexer PRIVATE TRACY_DISABLE)
 
 if(WIN32)
     target_link_libraries(lib_lexer PRIVATE ws2_32 dbghelp)

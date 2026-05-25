@@ -44,7 +44,7 @@ class TokenStrategy : public ITokenStrategy {
         // consumes the entire substring from the given cursor_pos to the end of the terminator
         // returns a uint_32t which is the total distance travelled during the peek
         uint32_t peek(int cursor_pos, std::optional<int> max_steps = std::nullopt) {
-            
+            ZoneScoped;
             int peek_cursor_pos = cursor_pos;
             while(peek_cursor_pos < lexer.source.length()) {
                 char current = lexer.source[peek_cursor_pos];
@@ -77,11 +77,13 @@ class TokenStrategy : public ITokenStrategy {
         }
 
         TokenStrategyResult result(DMToken::TokenType type, std::string_view value, int pos, int length) {
+            ZoneScoped;
             return TokenStrategyResult(new_token(type, value, pos), length);
         }
 
         DMToken new_token(DMToken::TokenType type, std::string_view value, int pos) {
-            return DMToken(type, lexer.interner.intern_string(value), lexer.get_cursor_coordinates(pos));
+            ZoneScoped;
+            return DMToken(type, lexer.interner.intern_string(value), static_cast<uint32_t>(pos));
         }
         
         // below are implemented on the derivative classes

@@ -15,13 +15,13 @@ TokenStrategyResult StringMultilineStrategy::run(int pos) {
         label_length = 1;
     }
     switch(lexer.source[pos+2+label_length]){
-        case '[':
-            label = lexer.source.substr(pos+2, label_length);
-            // special case where we need to register both the closed string and the embed open
-            // because the lexer isn't aware yet that it's in an embedded expression until the embed open is registered
-            lexer.register_token(result(DMToken::TokenType::STRING_MULTILINE, "MULTILINE STRING: " + label, pos, label_length+1)); // +2 to account for open {"
-            lexer.string_stack.context = StringStack::Context::Multiline;
-            return result(DMToken::TokenType::EMBED_OPEN, "EMBED_OPEN", pos+label_length, 1); // label_length + 2 accounts for the open {" and the closing [
+    //    case '[':
+    //        label = lexer.source.substr(pos+2, label_length);
+    //        // special case where we need to register both the closed string and the embed open
+    //        // because the lexer isn't aware yet that it's in an embedded expression until the embed open is registered
+    //        lexer.register_token(result(DMToken::TokenType::STRING_MULTILINE, "MULTILINE STRING: " + label, pos, label_length+1)); // +2 to account for open {"
+    //        lexer.string_stack.context = StringStack::Context::Multiline;
+    //        return result(DMToken::TokenType::EMBED_OPEN, "EMBED_OPEN", pos+label_length, 1); // label_length + 2 accounts for the open {" and the closing [
         default:
             label = lexer.source.substr(pos+2, label_length-2);
             return result(DMToken::TokenType::STRING_MULTILINE, "MULTILINE STRING: " + label, pos, label_length+4); // label_length 4 accounts for opening and closing {" "}

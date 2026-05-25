@@ -137,14 +137,14 @@ struct DMToken {
             #undef AS_STRING
         };
 
-        DMToken(CursorCoordinate c);
-        DMToken( DMToken::TokenType t, uint32_t v,  CursorCoordinate c);
+        DMToken(uint32_t p);
+        DMToken( DMToken::TokenType t, uint32_t v,  uint32_t p);
 
-        DMToken::TokenType type;
         uint32_t value_index;
-        uint32_t offset;
-        uint16_t line;
-        uint16_t column;
+        DMToken::TokenType type;
+        uint32_t pos;
+    //    uint16_t line;
+    //    uint16_t column;
 
         std::string_view get_name();
     };

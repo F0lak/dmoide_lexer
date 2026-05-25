@@ -10,6 +10,7 @@ std::string OperatorStrategy::name() const {
 
 TokenStrategyResult OperatorStrategy::run(int pos) {
     ZoneScoped;
+
     int label_length = peek(pos);
     std::string_view label = lexer.source.substr(pos, label_length);
 
@@ -17,11 +18,15 @@ TokenStrategyResult OperatorStrategy::run(int pos) {
         label_length = 1;
     }
 
-    if(DMOperators::is_operator(label)){
-        return result(DMOperators::mapping.at(label), label, pos, label_length);
+    DMToken::TokenType token_type = DMToken::TokenType::NULL_OP;
+
+    if(DMOperators::is_operator(label)) {
+        ZoneScopedN("Map Lookup");
+        token_type = DMOperators::mapping.at(label);
     }
-    else {
-        return result(DMToken::TokenType::NULL_OP, label, pos, label_length);
+
+    { ZoneScopedN("Result Construction");
+        return result(token_type, label, pos, label_length);
     }
 };
 

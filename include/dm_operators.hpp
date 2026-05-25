@@ -75,9 +75,11 @@ namespace DMOperators {
 
     // Keeping your original boolean check just in case
     inline bool is_operator(std::string_view word) {
+        ZoneScopedN("is_operator(string)");
         return mapping.contains(word);
     }
     inline bool is_operator(char op) {
+        ZoneScopedN("is_operator(char)");
         // Create a temporary view of the single char
         return mapping.find(std::string_view(&op, 1)) != mapping.end();
     }

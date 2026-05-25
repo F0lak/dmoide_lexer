@@ -1,4 +1,5 @@
 #include "string_internment.hpp"
+#include <tracy/Tracy.hpp>
 
 void StringInterner::reserve(size_t capacity) {
     intern_hashmap.reserve(capacity);
@@ -11,17 +12,23 @@ void StringInterner::trim(size_t size_buffer) {
 }
 
 uint32_t StringInterner::intern_string(std::string_view string) {
+    ZoneScoped;
+
+    { ZoneScopedN("Hashmap Lookup")
     auto it = intern_hashmap.find(string);
     if(it != intern_hashmap.end()){
         return it->second;
     }
+    }
 
     uint32_t new_index = intern_table.size();
+    { ZoneScopedN("Intern Table")
     intern_table.emplace_back(string);
 
     std::string_view perm_string = intern_table.back();
     intern_hashmap[perm_string] = new_index;
-
+    }
+    
     return new_index;
 }
 

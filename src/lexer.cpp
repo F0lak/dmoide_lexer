@@ -38,6 +38,7 @@ void Lexer::count_lines() {
 }
 
 CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
+    ZoneScoped;
     auto it = std::upper_bound(line_map.begin(), line_map.end(), pos);
     size_t line_index = std::distance(line_map.begin(), it);
     size_t column_index = pos;
@@ -89,8 +90,7 @@ LexerData Lexer::tokenize(std::string_view source) {
                     continue;
                 }
             
-            CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
-            tokens.emplace_back(DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("ERROR: Stray \\"), cursor_coord));
+            tokens.emplace_back(DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("ERROR: Stray \\"), cursor_pos));
             cursor_pos++;
             continue;
         }
@@ -191,8 +191,7 @@ LexerData Lexer::tokenize(std::string_view source) {
         }
     }
 
-    CursorCoordinate cursor_coord = get_cursor_coordinates(static_cast<int>(source.length()));
-    tokens.emplace_back(DMToken(DMToken::TokenType::END_OF_FILE, interner.intern_string("EOF"), cursor_coord)); // register this immediately since it's known to be EOF
+    tokens.emplace_back(DMToken(DMToken::TokenType::END_OF_FILE, interner.intern_string("EOF"), cursor_pos)); // register this immediately since it's known to be EOF
 
     lex_data.error = LEXError::ErrorCode::LEXError_OK;
     lex_data.data_string = "No Token Data.  Call get_formatted_tokens() to build data string.";
@@ -215,13 +214,20 @@ std::string Lexer::get_formatted_tokens() {
 
 // Runs a strategy for the given context
 void Lexer::run_strategy(StrategyContext strat_context){
-    ITokenStrategy* strategy = strategy_lookup[static_cast<size_t>(strat_context)].get();
+    ZoneScoped;
+    ITokenStrategy* strategy = nullptr;
+    { ZoneScopedN("Lookup and Strategy Init");
+    strategy = strategy_lookup[static_cast<size_t>(strat_context)].get();
+    }
+    { ZoneScopedN("Build Result");
     TokenStrategyResult result = strategy->run(cursor_pos);
     register_token(result);
+    }
 }
 
 // Handles registering tokens to the tokens list and handles special cases (ie: TOKEN_IGNORE)
 void Lexer::register_token(TokenStrategyResult result) {
+    ZoneScoped;
 //    std::string msg = std::format("Token Type {}, Characters Consumed {}\n", static_cast<int>(result.token.type), result.characters_consumed);
 //    std::cout << msg;
     cursor_pos += result.characters_consumed;
@@ -263,7 +269,7 @@ std::string Lexer::readable_token(DMToken token) {
         return "";
     }
 
-    std::string result = std::format("[{} L{} C{}]", interner.lookup(token.value_index), token.line, token.column);
+    std::string result = std::format("[{}]", interner.lookup(token.value_index));
     if(token.type == DMToken::TokenType::NEWLINE){
         result += '\n';
     }
@@ -274,8 +280,7 @@ std::string Lexer::readable_token(DMToken token) {
 }
 
 void Lexer::register_error(std::string message, int pos){
-    CursorCoordinate coords = get_cursor_coordinates(pos);
-    tokens.emplace_back(DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("TOKEN_ERROR: " + message), coords));
+    tokens.emplace_back(DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("TOKEN_ERROR: " + message), pos));
     cursor_pos++;
 }
 
