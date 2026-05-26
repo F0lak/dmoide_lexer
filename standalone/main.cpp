@@ -31,12 +31,12 @@ std::string load_file(const std::string& path) {
 void test_run() {
     std::cout << "Current path is: " << std::filesystem::current_path() << std::endl;
     Lexer lexer;
-    const std::string TEST_FILE = kinfig_test_file;
+    const std::string TEST_FILE = milestone5_test_file;
     std::string file_contents = load_file(TEST_FILE);
     std::cout << "Lexer Source set successfully\n";
 
     LexerData lexer_data = lexer.tokenize(file_contents);
-    std::cout << "Scan Result:\n" << lexer_data.data_string << "\n";
+    std::cout << "Scan Result:\n" << lexer.get_formatted_tokens() << "\n";
 
     std::cout << TEST_FILE << " is " << file_contents.size() << " characters long\n";
     std::cout << TEST_FILE << " has " << lexer.line_count() << " lines\n";

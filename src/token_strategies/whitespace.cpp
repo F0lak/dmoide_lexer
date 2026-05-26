@@ -11,12 +11,9 @@ TokenStrategyResult WhitespaceStrategy::run(int pos) {
     ZoneScoped;
     char current = lexer.source[pos];
     switch(current){
-        case '\r': {
-            uint32_t peek_dist = peek(pos);
-            pos += peek_dist;
-            return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, peek_dist);
-        }
         case ';':
+            return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
+        case '\n':
             return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
         case ' ':
             return result(DMToken::TokenType::TOKEN_WHITESPACE, "SPACE", pos, 1);

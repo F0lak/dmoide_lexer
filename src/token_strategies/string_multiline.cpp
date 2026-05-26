@@ -44,5 +44,6 @@ ScanResult StringMultilineStrategy::scan(int cursor_pos) {
         {
             return ScanResult(true, 2);
         }
-    return ScanResult(is_escape_character(character), 0);
+    return ScanResult(false, 0);
+    //return ScanResult(is_escape_character(character), 1);
 }
