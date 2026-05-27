@@ -11,30 +11,23 @@ TokenStrategyResult WhitespaceStrategy::run(int pos) {
     ZoneScoped;
     char current = lexer.source[pos];
     switch(current){
-        case ';':
-            return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
         case '\n':
             return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
         case ' ':
             return result(DMToken::TokenType::TOKEN_WHITESPACE, "SPACE", pos, 1);
         case '\t':
             return result(DMToken::TokenType::TOKEN_WHITESPACE, "TAB", pos, 1);
+        case ';':
+            return result(DMToken::TokenType::NEWLINE, "NEWLINE", pos, 1);
         default:
             return result(DMToken::TokenType::TOKEN_IGNORE, "TOKEN_IGNORE", pos, 1);
     }
 };
 
 bool WhitespaceStrategy::is_escape_character(char character) {
-    if(character == '\r'){
-        return false;
-    }
-    if(character == '\n'){
-        return true;
-    }
     return true;
 }
 
 ScanResult WhitespaceStrategy::scan(int cursor_pos) {
-    char character = lexer.source[cursor_pos];
-    return ScanResult(is_escape_character(character), 0);
+    return ScanResult(true, 0);
 }

@@ -1,19 +1,3 @@
-"this is a string"
-"this is an [embedded] string"
-"this is an \"escaped\" string"
-"this string is unterminated
-	{"this
-is
-a
-multiline
-string
-"}
-{"multiline [embedded] 
-string"}
-tits
-and
-ass
-
 turf/auto_tiler
 	wall
 		roman

@@ -10,8 +10,10 @@
     X(TOKEN_WHITESPACE)        \
     X(COMMENT_INLINE)          \
     X(COMMENT_MULTILINE)       \
-    X(STRING)                  \
-    X(STRING_MULTILINE)        \
+    X(STRING_OPEN)             \
+    X(STRING_CLOSE)            \
+    X(STRING_MULTILINE_OPEN)   \
+    X(STRING_MULTILINE_CLOSE)  \
     X(NUMBER)                  \
     X(IDENTIFIER)              \
     X(NEWLINE)                 \

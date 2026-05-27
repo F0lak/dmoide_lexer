@@ -14,6 +14,7 @@ std::string milestone3_test_file = "../../../test_dm_files/number_test.dm";
 std::string milestone4_test_file = "../../../test_dm_files/indentation_test.dm";
 std::string milestone5_test_file = "../../../test_dm_files/string_test.dm";
 std::string crashout1_test_file = "../../../test_dm_files/crashout1.dm";
+std::string crashout2_test_file = "../../../test_dm_files/crashout2.dm";
 std::string kinfig_test_file = "../../../test_dm_files/kinfig_test.dm";
 
 std::string load_file(const std::string& path) {

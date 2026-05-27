@@ -71,125 +71,147 @@ LexerData Lexer::tokenize(std::string_view source) {
 
     while (cursor_pos < source.length()) {
         char current = source[cursor_pos];
-
         // Escape Character '\'
         if(current == '\\'){
             ZoneScopedN("Escape Character Read");
             if( cursor_pos + 2 < source.length() && 
                 source[cursor_pos + 1] == '\r' &&
                 source[cursor_pos + 2] == '\n'){
-               
+            
                     cursor_pos += 3;
                     continue;
                 }
+            else {
+                cursor_pos++;
+            }
+        }
 
-            if( cursor_pos + 1 < source.length() &&
-                std::isalpha(source[cursor_pos + 1])){
-                    // Will need to change this to Path strategy when that's implemented
+        switch(string_stack.context) {
+            case StringStack::Context::Inline:
+                if(current == '\n'){
+                    run_strategy(StrategyContext::Whitespace);
+                    string_stack.pop();
+                    break;
+                }
+                if(current == '['){
+                    tokens.emplace_back(DMToken(DMToken::TokenType::EMBED_OPEN, interner.intern_string("EMBED_OPEN"), cursor_pos));
+                    string_stack.push(StringStack::Context::NoContext);
+                }
+                if(current == '"'){
+                    tokens.emplace_back(DMToken(DMToken::TokenType::STRING_CLOSE, interner.intern_string("STRING_CLOSE"), cursor_pos));
+                    string_stack.pop();
+                }
+                cursor_pos++;
+                break;
+
+            case StringStack::Context::Multiline:
+                if(current == '['){
+                    tokens.emplace_back(DMToken(DMToken::TokenType::EMBED_OPEN, interner.intern_string("EMBED_OPEN"), cursor_pos));
+                    string_stack.push(StringStack::Context::NoContext);
+                }
+                if( current == '"' && source[cursor_pos+1] == '}' && string_stack.context == StringStack::Context::Multiline) {
+                    tokens.emplace_back(DMToken(DMToken::TokenType::STRING_MULTILINE_CLOSE, interner.intern_string("STRING_ML_CLOSE"), cursor_pos));
+                    string_stack.pop();
+                    cursor_pos += 2;
+                    break;
+                }
+                else {
+                    cursor_pos++;
+                    break;
+                }
+
+            default:
+            
+                // Indentation
+                if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
+                    ZoneScopedN("Indentation Read");
+                    run_strategy(StrategyContext::Indentation);
+                    continue;
+                }
+
+                // Strings
+                if(current == '"'){
+                    ZoneScopedN("String Read");
+                    tokens.emplace_back(DMToken(DMToken::TokenType::STRING_OPEN, interner.intern_string("STRING_OPEN"), cursor_pos));
+                    string_stack.push(StringStack::Context::Inline);
+                    cursor_pos++;
+                    continue;
+                }
+
+                // Multiline Strings
+                if(cursor_pos+1 < source.length()){
+                    if( current == '{' && source[cursor_pos+1] == '"' && string_stack.context == StringStack::Context::NoContext) {
+                        tokens.emplace_back(DMToken(DMToken::TokenType::STRING_MULTILINE_OPEN, interner.intern_string("STRING_ML_OPEN"), cursor_pos));
+                        string_stack.push(StringStack::Context::Multiline);
+                        cursor_pos += 2;
+                        continue;
+                    }
+                }
+
+                if(current == ']'){
+                    ZoneScopedN("String Stack Read");
+                    tokens.emplace_back(DMToken(DMToken::TokenType::EMBED_CLOSE, interner.intern_string("EMBED_CLOSE"), cursor_pos));
+                    string_stack.pop();
+                    cursor_pos++;
+                    continue;
+                }
+
+                // Curly Braces
+                if((current == '{' || current == '}')){
+                    ZoneScopedN("Curly Read");
+                    run_strategy(StrategyContext::CurlyBrace);
+                    continue;
+                }
+
+                // Whitespace
+                if(std::isspace(current)) {
+                    ZoneScopedN("Whitespace Read");
+                    run_strategy(StrategyContext::Whitespace);
+                    continue;
+                }
+
+                // Identifiers and Keywords
+                if(std::isalpha(current) || current == '_'){
+                    ZoneScopedN("Identifier Read");
+                    run_strategy(StrategyContext::Identifier);
+                    continue;
+                }
+
+                // Comments
+                if(current == '/'){
+                    ZoneScopedN("Comment Read");
+                    char next = source[cursor_pos + 1];
+                    if(next == '/'){
+                        run_strategy(StrategyContext::CommentInline);
+                        continue;
+                    }
+                    if(next == '*'){
+                        run_strategy(StrategyContext::CommentMultiline);
+                        continue;
+                    }
+                }
+            
+                // Operators
+                if(DMOperators::is_operator(current)){
+                    ZoneScopedN("Operator Read");
                     run_strategy(StrategyContext::Operator);
                     continue;
                 }
-            
-            tokens.emplace_back(DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("ERROR: Stray \\"), cursor_pos));
-            cursor_pos++;
-            continue;
-        }
 
-        // Indentation
-        if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
-            ZoneScopedN("Indentation Read");
-            run_strategy(StrategyContext::Indentation);
-            continue;
-        }
-
-        // Multiline Strings
-        if(cursor_pos+1 < source.length() && current == '{' && source[cursor_pos+1] == '"'){
-            ZoneScopedN("Multiline String Read");
-            run_strategy(StrategyContext::StringMultiLine);
-            continue;
-        }
-
-        // Strings
-        if(current == '"'){
-            ZoneScopedN("String Read");
-            run_strategy(StrategyContext::String);
-            continue;
-        }
-        if(string_stack.depth > 0 && current == ']'){
-            ZoneScopedN("String Stack Read");
-            run_strategy(StrategyContext::StringEmbed);
-            switch(string_stack.context){
-                case StringStack::Context::Inline:
-                    run_strategy(StrategyContext::String);
-                    break;
-                case StringStack::Context::Multiline:
-                    run_strategy(StrategyContext::StringMultiLine);
-                    break;
-                default:
-                    register_error("sting_stack has No Context: " + std::to_string(static_cast<int>(string_stack.context)), cursor_pos);
-                    break;
-            }
-            if(string_stack.depth == 0){
-                string_stack.context = StringStack::Context::NoContext;
+                // Numbers
+                if(std::isdigit(current)){
+                    ZoneScopedN("Number Read");
+                    run_strategy(StrategyContext::Number);
+                    continue;
                 }
-            continue;
-        }
 
-        // Curly Braces
-        if((current == '{' || current == '}')){
-            ZoneScopedN("Curly Read");
-            run_strategy(StrategyContext::CurlyBrace);
-            continue;
-        }
-
-        // Whitespace
-        if(std::isspace(current)) {
-            ZoneScopedN("Whitespace Read");
-            run_strategy(StrategyContext::Whitespace);
-            continue;
-        }
-
-        // Identifiers and Keywords
-        if(std::isalpha(current) || current == '_'){
-            ZoneScopedN("Identifier Read");
-            run_strategy(StrategyContext::Identifier);
-            continue;
-        }
-
-        // Comments
-        if(current == '/'){
-            ZoneScopedN("Comment Read");
-            char next = source[cursor_pos + 1];
-            if(next == '/'){
-                run_strategy(StrategyContext::CommentInline);
-                continue;
-            }
-            if(next == '*'){
-                run_strategy(StrategyContext::CommentMultiline);
-                continue;
+                // Nothing here to tokenize.  Move on with our life.
+                else {
+                    ZoneScopedN("Nothing Happened");
+                    cursor_pos++;
+                }
             }
         }
-       
-        // Operators
-        if(DMOperators::is_operator(current)){
-            ZoneScopedN("Operator Read");
-            run_strategy(StrategyContext::Operator);
-            continue;
-        }
-
-        // Numbers
-        if(std::isdigit(current)){
-            ZoneScopedN("Number Read");
-            run_strategy(StrategyContext::Number);
-            continue;
-        }
-
-        // Nothing here to tokenize.  Move on with our life.
-        else {
-            ZoneScopedN("Nothing Happened");
-            cursor_pos++;
-        }
-    }
 
     tokens.emplace_back(DMToken(DMToken::TokenType::END_OF_FILE, interner.intern_string("EOF"), cursor_pos)); // register this immediately since it's known to be EOF
 
@@ -244,13 +266,6 @@ void Lexer::register_token(TokenStrategyResult result) {
 
         case DMToken::TokenType::INDENT:
         case DMToken::TokenType::DEDENT:
-            break;
-
-        case DMToken::TokenType::EMBED_OPEN:
-            string_stack.depth++;
-            break;
-        case DMToken::TokenType::EMBED_CLOSE:
-            string_stack.depth--;
             break;
             
         case DMToken::TokenType::NEWLINE:

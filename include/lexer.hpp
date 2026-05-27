@@ -24,6 +24,28 @@ struct StringStack {
     };
     Context context = Context::NoContext;
     int depth = 0;
+    std::vector<Context> stack;
+
+    size_t size() {
+        return stack.size();
+    }
+
+    void push(Context c){
+        stack.push_back(c);
+        context = c;
+    }
+
+    void pop(){
+        if(!stack.empty()){
+            stack.pop_back();
+        }
+        if(!stack.empty()){
+            context = stack.back();
+        }
+        else{
+            context = Context::NoContext;
+        }
+    }
 
     void clear() {
         context = Context::NoContext;
