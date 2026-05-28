@@ -64,6 +64,127 @@ namespace DMOperators {
         {"}",   DMToken::TokenType::OP_CURLY_CLOSE}
     };
 
+constexpr DMToken::TokenType operator_tokens[] = {
+    // === 3-Character Operators ===
+    DMToken::TokenType::OP_SORT,
+    DMToken::TokenType::OP_ASSIGN_BITSHIFT_LEFT,
+    DMToken::TokenType::OP_ASSIGN_BITSHIFT_RIGHT,
+
+    // === 2-Character Operators ===
+    DMToken::TokenType::OP_ASSIGN_ADD,
+    DMToken::TokenType::OP_ASSIGN_SUBTRACT,
+    DMToken::TokenType::OP_ASSIGN_MULTIPLY,
+    DMToken::TokenType::OP_ASSIGN_DIVIDE,
+    DMToken::TokenType::OP_ASSIGN_MOD,
+    DMToken::TokenType::OP_INCREMENT,
+    DMToken::TokenType::OP_DECREMENT,
+    DMToken::TokenType::OP_EQUAL_TO,
+    DMToken::TokenType::OP_NOT_EQUAL,
+    DMToken::TokenType::OP_NOT_EQUAL, // Alias (<>)
+    DMToken::TokenType::OP_LESS_EQUAL,
+    DMToken::TokenType::OP_GREATER_EQUAL,
+    DMToken::TokenType::OP_BOOLEAN_AND,
+    DMToken::TokenType::OP_BITWISE_OR, // Alias (||)
+    DMToken::TokenType::OP_BITSHIFT_LEFT,
+    DMToken::TokenType::OP_BITSHIFT_RIGHT,
+    DMToken::TokenType::OP_ASSIGN_BITWISE_AND,
+    DMToken::TokenType::OP_ASSIGN_BITWISE_NOT,
+    DMToken::TokenType::OP_ASSIGN_BITWISE_XOR,
+    DMToken::TokenType::OP_NULL_COND_DOT,
+    DMToken::TokenType::OP_NULL_COND_DOT, // Alias (?.)
+
+    // === 1-Character Operators ===
+    DMToken::TokenType::OP_ASSIGN_EQUAL,
+    DMToken::TokenType::OP_ADD,
+    DMToken::TokenType::OP_SUBTRACT,
+    DMToken::TokenType::OP_MULTIPLY,
+    DMToken::TokenType::OP_SLASH,
+    DMToken::TokenType::OP_MOD,
+    DMToken::TokenType::OP_LESS_THAN,
+    DMToken::TokenType::OP_GREATER_THAN,
+    DMToken::TokenType::OP_BANG,
+    DMToken::TokenType::OP_BITWISE_AND,
+    DMToken::TokenType::OP_BITWISE_OR,
+    DMToken::TokenType::OP_BITWISE_XOR,
+    DMToken::TokenType::OP_TILDE,
+    DMToken::TokenType::OP_DOT_ACCESS,
+    DMToken::TokenType::OP_COLON_ACCESS,
+    DMToken::TokenType::OP_TERNARY_IF,
+    DMToken::TokenType::SEPARATOR,
+    DMToken::TokenType::OP_BRACKET_OPEN,
+    DMToken::TokenType::OP_BRACKET_CLOSE,
+    DMToken::TokenType::OP_PAREN_OPEN,
+    DMToken::TokenType::OP_PAREN_CLOSE,
+    DMToken::TokenType::OP_CURLY_OPEN,
+    DMToken::TokenType::OP_CURLY_CLOSE
+};
+
+constexpr size_t lengths[] = {
+    // === 3-Character Operators ===
+    3, 3, 3,
+
+    // === 2-Character Operators ===
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+
+    // === 1-Character Operators ===
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+};
+
+constexpr char operators[][4] = {
+    // === 3-Character Operators ===
+    "<=>", // DMToken::TokenType::OP_SORT
+    "<<=", // DMToken::TokenType::OP_ASSIGN_BITSHIFT_LEFT
+    ">>=", // DMToken::TokenType::OP_ASSIGN_BITSHIFT_RIGHT
+
+    // === 2-Character Operators ===
+    "+=",  // DMToken::TokenType::OP_ASSIGN_ADD
+    "-=",  // DMToken::TokenType::OP_ASSIGN_SUBTRACT
+    "*=",  // DMToken::TokenType::OP_ASSIGN_MULTIPLY
+    "/=",  // DMToken::TokenType::OP_ASSIGN_DIVIDE
+    "%=",  // DMToken::TokenType::OP_ASSIGN_MOD
+    "++",  // DMToken::TokenType::OP_INCREMENT
+    "--",  // DMToken::TokenType::OP_DECREMENT
+    "==",  // DMToken::TokenType::OP_EQUAL_TO
+    "!=",  // DMToken::TokenType::OP_NOT_EQUAL
+    "<>",  // DMToken::TokenType::OP_NOT_EQUAL (Alias)
+    "<=",  // DMToken::TokenType::OP_LESS_EQUAL
+    ">=",  // DMToken::TokenType::OP_GREATER_EQUAL
+    "&&",  // DMToken::TokenType::OP_BOOLEAN_AND
+    "||",  // DMToken::TokenType::OP_BITWISE_OR (Note: Ensure you have OP_BOOLEAN_OR in enum)
+    "<<",  // DMToken::TokenType::OP_BITSHIFT_LEFT
+    ">>",  // DMToken::TokenType::OP_BITSHIFT_RIGHT
+    "&=",  // DMToken::TokenType::OP_ASSIGN_BITWISE_AND
+    "|=",  // DMToken::TokenType::OP_ASSIGN_BITWISE_NOT
+    "^=",  // DMToken::TokenType::OP_ASSIGN_BITWISE_XOR
+    ".?",  // DMToken::TokenType::OP_NULL_COND_DOT
+    "?.",  // DMToken::TokenType::OP_NULL_COND_DOT (Alias)
+
+    // === 1-Character Operators ===
+    "=",   // DMToken::TokenType::OP_ASSIGN_EQUAL
+    "+",   // DMToken::TokenType::OP_ADD
+    "-",   // DMToken::TokenType::OP_SUBTRACT
+    "*",   // DMToken::TokenType::OP_MULTIPLY
+    "/",   // DMToken::TokenType::OP_SLASH
+    "%",   // DMToken::TokenType::OP_MOD
+    "<",   // DMToken::TokenType::OP_LESS_THAN
+    ">",   // DMToken::TokenType::OP_GREATER_THAN
+    "!",   // DMToken::TokenType::OP_BANG
+    "&",   // DMToken::TokenType::OP_BITWISE_AND
+    "|",   // DMToken::TokenType::OP_BITWISE_OR
+    "^",   // DMToken::TokenType::OP_BITWISE_XOR
+    "~",   // DMToken::TokenType::OP_TILDE
+    ".",   // DMToken::TokenType::OP_DOT_ACCESS
+    ":",   // DMToken::TokenType::OP_COLON_ACCESS
+    "?",   // DMToken::TokenType::OP_TERNARY_IF
+    ",",   // DMToken::TokenType::SEPARATOR
+    "[",   // DMToken::TokenType::OP_BRACKET_OPEN
+    "]",   // DMToken::TokenType::OP_BRACKET_CLOSE
+    "(",   // DMToken::TokenType::OP_PAREN_OPEN
+    ")",   // DMToken::TokenType::OP_PAREN_CLOSE
+    "{",   // DMToken::TokenType::OP_CURLY_OPEN
+    "}"    // DMToken::TokenType::OP_CURLY_CLOSE
+};
+
     // Returns the TokenType if found, otherwise returns a default (like IDENTIFIER)
     inline DMToken::TokenType get_type(std::string_view word) {
         auto it = mapping.find(word);

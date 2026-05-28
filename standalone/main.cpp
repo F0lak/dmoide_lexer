@@ -32,7 +32,7 @@ std::string load_file(const std::string& path) {
 void test_run() {
     std::cout << "Current path is: " << std::filesystem::current_path() << std::endl;
     Lexer lexer;
-    const std::string TEST_FILE = milestone5_test_file;
+    const std::string TEST_FILE = kinfig_test_file;
     std::string file_contents = load_file(TEST_FILE);
     std::cout << "Lexer Source set successfully\n";
 

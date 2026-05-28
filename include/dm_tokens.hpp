@@ -5,9 +5,9 @@
 #define TOKEN_LIST(X) \
     X(PLACEHOLDER)             \
     X(END_OF_FILE)             \
-    X(TOKEN_ERROR)             \
-    X(TOKEN_IGNORE)            \
-    X(TOKEN_WHITESPACE)        \
+    X(ERROR)                   \
+    X(IGNORE)                  \
+    X(WHITESPACE)              \
     X(COMMENT_INLINE)          \
     X(COMMENT_MULTILINE)       \
     X(STRING_OPEN)             \
@@ -140,13 +140,12 @@ struct DMToken {
         };
 
         DMToken(uint32_t p);
-        DMToken( DMToken::TokenType t, uint32_t v,  uint32_t p);
+        DMToken( DMToken::TokenType t, uint32_t p);
 
-        uint32_t value_index;
         DMToken::TokenType type;
         uint32_t pos;
     //    uint16_t line;
     //    uint16_t column;
 
-        std::string_view get_name();
+        std::string_view name();
     };

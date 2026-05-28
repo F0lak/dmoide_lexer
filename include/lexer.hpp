@@ -1,7 +1,5 @@
 #pragma once
 #include "ilexer_interface.hpp"
-#include "cursor_coordinates.hpp"
-#include "string_internment.hpp"
 #include "tracy/Tracy.hpp"
 
 struct IndentationStack {
@@ -16,11 +14,16 @@ struct IndentationStack {
     }
 };
 
-struct StringStack {
+struct LexerState {
     enum class Context {
         NoContext,
-        Inline,
-        Multiline
+        Identifier,
+        StringInline,
+        StringMultiline,
+        CommentInline,
+        CommentMultiline,
+        Operator,
+        Whitespace
     };
     Context context = Context::NoContext;
     int depth = 0;
@@ -54,40 +57,8 @@ struct StringStack {
 };
 
 class Lexer : public ILexerInterface {
-    template <typename Derived> friend class TokenStrategy;
-    friend class PlaceholderStrategy;
-    friend class WhitespaceStrategy;
-    friend class IdentifierStrategy;
-    friend class OperatorStrategy;
-    friend class CommentInlineStrategy;
-    friend class IndentationStrategy;
-    friend class CurlyBraceStrategy;
-    friend class StringStrategy;
-    friend class StringMultilineStrategy;
-    friend class StringEmbedStrategy;
-    friend class ErrorStrategy;
-    friend class CommentMultilineStrategy;
-    friend class NumberStrategy;
-    friend struct TokenStrategyResult;
 
     public:
-        enum class StrategyContext {
-            Default,
-            Whitespace,
-            Identifier,
-            Operator,
-            CommentInline,
-            CommentMultiline,
-            Number,
-            Indentation,
-            CurlyBrace,
-            String,
-            StringMultiLine,
-            StringEmbed,
-            Error,
-            Count
-        };
-
         Lexer();
 
         LexerData tokenize(std::string_view source) override;
@@ -95,27 +66,19 @@ class Lexer : public ILexerInterface {
 
         uint32_t line_count();
 
-        uint32_t get_token_value_count() override;
-
     private:
-        StringInterner interner;
-
-        void initialize();
         void register_error(std::string message, int pos);
         void set_source(std::string_view new_source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
-        void run_strategy(StrategyContext strat_context);
-        void register_token(TokenStrategyResult result);
         std::string readable_token(DMToken token);
         void coorindate(DMToken token);
-        
-        std::array<std::unique_ptr<ITokenStrategy>, static_cast<size_t>(StrategyContext::Count)> strategy_lookup;
+        void new_token(DMToken::TokenType t, size_t p);
 
         // these are reset every time tokenize() is ran
         std::string_view source; // The string given to the lexer
         IndentationStack indentation = IndentationStack();
-        StringStack string_stack = StringStack();
+        LexerState lexer_state = LexerState();
         std::vector<DMToken> tokens;    // All of the tokens that have been generated
         std::vector<size_t> line_map;  //list of lines in the file, where the number stored is the cursor position at the beginning of the line.
         int indents = 0;

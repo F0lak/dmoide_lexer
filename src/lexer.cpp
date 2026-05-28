@@ -10,10 +10,6 @@ CursorCoordinate::CursorCoordinate(size_t l, size_t c)
     {}
 
 Lexer::Lexer() {
-    std::cout << "Lexer Constructor\n";
-    this->initialize();
-    std::cout << "Lexer Initialized\n";
-    interner.reserve(5000);
 }
 
 void Lexer::set_source(std::string_view new_source) {
@@ -51,12 +47,17 @@ CursorCoordinate Lexer::get_cursor_coordinates(int pos) {
     return coordinates;
 }
 
+void Lexer::new_token(DMToken::TokenType t, size_t p){
+    tokens.emplace_back(DMToken(t, p));
+}
+
 LexerData Lexer::tokenize(std::string_view source) {
     ZoneScoped;
+    LexerData lex_data;
 
+    { ZoneScopedN("Startup");
     set_source(source);
 
-    LexerData lex_data;
 
     std::cout << "Lexer is scanning string\n";
     std::cout << "String length is: " << source.length() << "\n";
@@ -65,11 +66,13 @@ LexerData Lexer::tokenize(std::string_view source) {
     indents = 0;
     cursor_pos = 0;
     indentation.clear();
-    string_stack.clear();
+    lexer_state.clear();
     tokens.clear();
-    tokens.reserve(620000);
+    tokens.reserve(10000);
+    }
 
     while (cursor_pos < source.length()) {
+        ZoneScopedN("iteration");
         char current = source[cursor_pos];
         // Escape Character '\'
         if(current == '\\'){
@@ -86,122 +89,199 @@ LexerData Lexer::tokenize(std::string_view source) {
             }
         }
 
-        switch(string_stack.context) {
-            case StringStack::Context::Inline:
-                if(current == '\n'){
-                    run_strategy(StrategyContext::Whitespace);
-                    string_stack.pop();
-                    break;
-                }
+        switch(lexer_state.context) {
+            case LexerState::Context::StringInline:
+                { ZoneScopedN("String Crawl");
                 if(current == '['){
-                    tokens.emplace_back(DMToken(DMToken::TokenType::EMBED_OPEN, interner.intern_string("EMBED_OPEN"), cursor_pos));
-                    string_stack.push(StringStack::Context::NoContext);
+                    new_token(DMToken::TokenType::EMBED_OPEN, cursor_pos);
+                    lexer_state.push(LexerState::Context::NoContext);
                 }
                 if(current == '"'){
-                    tokens.emplace_back(DMToken(DMToken::TokenType::STRING_CLOSE, interner.intern_string("STRING_CLOSE"), cursor_pos));
-                    string_stack.pop();
+                    new_token(DMToken::TokenType::STRING_CLOSE, cursor_pos);
+                    lexer_state.pop();
+                }
+                if(current == '\n'){
+                    new_token(DMToken::TokenType::NEWLINE, cursor_pos);
+                    lexer_state.pop();
                 }
                 cursor_pos++;
+                }
                 break;
 
-            case StringStack::Context::Multiline:
-                if(current == '['){
-                    tokens.emplace_back(DMToken(DMToken::TokenType::EMBED_OPEN, interner.intern_string("EMBED_OPEN"), cursor_pos));
-                    string_stack.push(StringStack::Context::NoContext);
-                }
-                if( current == '"' && source[cursor_pos+1] == '}' && string_stack.context == StringStack::Context::Multiline) {
-                    tokens.emplace_back(DMToken(DMToken::TokenType::STRING_MULTILINE_CLOSE, interner.intern_string("STRING_ML_CLOSE"), cursor_pos));
-                    string_stack.pop();
+            case LexerState::Context::StringMultiline:
+                { ZoneScopedN("String ML Crawl");
+                if( current == '"' && cursor_pos+1 < source.size() && source[cursor_pos+1] == '}') {
+                    new_token(DMToken::TokenType::STRING_MULTILINE_CLOSE, cursor_pos);
+                    lexer_state.pop();
                     cursor_pos += 2;
                     break;
                 }
-                else {
-                    cursor_pos++;
+                if(current == '['){
+                    new_token(DMToken::TokenType::EMBED_OPEN, cursor_pos);
+                    lexer_state.push(LexerState::Context::NoContext);
+                }
+                cursor_pos++;
+                }
+                break;
+
+            case LexerState::Context::CommentInline:
+                { ZoneScopedN("Comment Crawl");
+                if(current == '\n'){
+                    new_token(DMToken::TokenType::NEWLINE, cursor_pos);
+                    lexer_state.pop();
+                }
+                cursor_pos++;
+                }  
+                break;
+
+            case LexerState::Context::CommentMultiline:
+                { ZoneScopedN("Comment ML Crawl");
+                if( current == '*' && cursor_pos+1 < source.size() && source[cursor_pos+1] == '/') {
+                    new_token(DMToken::TokenType::STRING_MULTILINE_CLOSE, cursor_pos);
+                    lexer_state.pop();
+                    cursor_pos += 2;
                     break;
                 }
+                cursor_pos++;
+                }
+                break;
+
+            case LexerState::Context::Identifier:
+                { ZoneScopedN("Identifier");
+                if(std::isalnum(current) || current == '_') {
+                    cursor_pos++;
+                }
+                else{
+                    lexer_state.pop();
+                }
+                }
+                break;
 
             default:
             
                 // Indentation
                 if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
-                    ZoneScopedN("Indentation Read");
-                    run_strategy(StrategyContext::Indentation);
+                    ZoneScopedN("Indentation");
+                    new_token(DMToken::TokenType::INDENT, cursor_pos);
+                    cursor_pos++;
+                    continue;
+                }
+
+                if(current == '\n'){
+                    ZoneScopedN("Newline");
+                    new_token(DMToken::TokenType::NEWLINE, cursor_pos);
+                    cursor_pos++;
                     continue;
                 }
 
                 // Strings
                 if(current == '"'){
-                    ZoneScopedN("String Read");
-                    tokens.emplace_back(DMToken(DMToken::TokenType::STRING_OPEN, interner.intern_string("STRING_OPEN"), cursor_pos));
-                    string_stack.push(StringStack::Context::Inline);
+                    ZoneScopedN("String Open");
+                    new_token(DMToken::TokenType::STRING_OPEN, cursor_pos);
+                    lexer_state.push(LexerState::Context::StringInline);
                     cursor_pos++;
                     continue;
                 }
 
                 // Multiline Strings
                 if(cursor_pos+1 < source.length()){
-                    if( current == '{' && source[cursor_pos+1] == '"' && string_stack.context == StringStack::Context::NoContext) {
-                        tokens.emplace_back(DMToken(DMToken::TokenType::STRING_MULTILINE_OPEN, interner.intern_string("STRING_ML_OPEN"), cursor_pos));
-                        string_stack.push(StringStack::Context::Multiline);
+                    if( current == '{' && source[cursor_pos+1] == '"' && lexer_state.context == LexerState::Context::NoContext) {
+                        ZoneScopedN("MS String Open");
+                        new_token(DMToken::TokenType::STRING_MULTILINE_OPEN, cursor_pos);
+                        lexer_state.push(LexerState::Context::StringMultiline);
                         cursor_pos += 2;
                         continue;
                     }
                 }
 
                 if(current == ']'){
-                    ZoneScopedN("String Stack Read");
-                    tokens.emplace_back(DMToken(DMToken::TokenType::EMBED_CLOSE, interner.intern_string("EMBED_CLOSE"), cursor_pos));
-                    string_stack.pop();
+                    ZoneScopedN("Embed Close");
+                    new_token(DMToken::TokenType::EMBED_CLOSE, cursor_pos);
+                    lexer_state.pop();
                     cursor_pos++;
                     continue;
                 }
 
                 // Curly Braces
-                if((current == '{' || current == '}')){
-                    ZoneScopedN("Curly Read");
-                    run_strategy(StrategyContext::CurlyBrace);
+                if(current == '{'){
+                    ZoneScopedN("Curly Open");
+                    new_token(DMToken::TokenType::INDENT, cursor_pos);
+                    cursor_pos++;
                     continue;
                 }
 
-                // Whitespace
-                if(std::isspace(current)) {
-                    ZoneScopedN("Whitespace Read");
-                    run_strategy(StrategyContext::Whitespace);
+                if(current == '}'){
+                    ZoneScopedN("Curly");
+                    new_token(DMToken::TokenType::DEDENT, cursor_pos);
+                    cursor_pos++;
                     continue;
                 }
 
                 // Identifiers and Keywords
                 if(std::isalpha(current) || current == '_'){
-                    ZoneScopedN("Identifier Read");
-                    run_strategy(StrategyContext::Identifier);
+                    ZoneScopedN("Identifier");
+                    new_token(DMToken::TokenType::IDENTIFIER, cursor_pos);
+                    lexer_state.push(LexerState::Context::Identifier);
+                    cursor_pos++;
                     continue;
                 }
 
                 // Comments
-                if(current == '/'){
-                    ZoneScopedN("Comment Read");
+                if(current == '/' && cursor_pos+1 < source.length()){
+                    ZoneScopedN("Comment");
                     char next = source[cursor_pos + 1];
                     if(next == '/'){
-                        run_strategy(StrategyContext::CommentInline);
+                        new_token(DMToken::TokenType::COMMENT_INLINE, cursor_pos);
+                        lexer_state.push(LexerState::Context::CommentInline);
+                        cursor_pos+=2;
                         continue;
                     }
                     if(next == '*'){
-                        run_strategy(StrategyContext::CommentMultiline);
+                        new_token(DMToken::TokenType::COMMENT_MULTILINE, cursor_pos);
+                        lexer_state.push(LexerState::Context::CommentMultiline);
+                        cursor_pos+=2;
                         continue;
                     }
-                }
-            
-                // Operators
-                if(DMOperators::is_operator(current)){
-                    ZoneScopedN("Operator Read");
-                    run_strategy(StrategyContext::Operator);
-                    continue;
+                    // single slashes are consumed by the operator check, which MUST follow this
                 }
 
                 // Numbers
                 if(std::isdigit(current)){
-                    ZoneScopedN("Number Read");
-                    run_strategy(StrategyContext::Number);
+                    ZoneScopedN("Operator Block")
+                    uint16_t digit_count = 0;
+                    while(cursor_pos+digit_count < source.size() && isdigit(source[cursor_pos+digit_count])){
+                        ++digit_count;
+                    }
+                    new_token(DMToken::TokenType::NUMBER, cursor_pos);
+                    cursor_pos += digit_count;
+                    continue;
+                }
+            
+                // Operators
+                bool found_op = false;
+                { ZoneScopedN("Operator Block");
+                size_t remaining = source.size() - cursor_pos;
+                const char* src_ptr = &source[cursor_pos];
+
+                for (size_t i = 0; i < std::size(DMOperators::operators); ++i) {
+                    size_t op_len = DMOperators::lengths[i]; 
+                    
+                    if (op_len > remaining) {
+                        continue;
+                    }
+
+                    if (src_ptr[0] == DMOperators::operators[i][0]) {
+                        if (op_len == 1 || std::memcmp(src_ptr, DMOperators::operators[i], op_len) == 0) {
+                            new_token(DMOperators::operator_tokens[i], cursor_pos);
+                            cursor_pos += op_len;
+                            found_op = true;
+                            break;
+                        }
+                    }
+                }
+                }
+
+                if (found_op) {
                     continue;
                 }
 
@@ -213,7 +293,7 @@ LexerData Lexer::tokenize(std::string_view source) {
             }
         }
 
-    tokens.emplace_back(DMToken(DMToken::TokenType::END_OF_FILE, interner.intern_string("EOF"), cursor_pos)); // register this immediately since it's known to be EOF
+    tokens.emplace_back(DMToken(DMToken::TokenType::END_OF_FILE, cursor_pos)); // register this immediately since it's known to be EOF
 
     lex_data.error = LEXError::ErrorCode::LEXError_OK;
     lex_data.data_string = "No Token Data.  Call get_formatted_tokens() to build data string.";
@@ -234,57 +314,12 @@ std::string Lexer::get_formatted_tokens() {
     return result;
 }
 
-// Runs a strategy for the given context
-void Lexer::run_strategy(StrategyContext strat_context){
-    ZoneScoped;
-    ITokenStrategy* strategy = nullptr;
-    { ZoneScopedN("Lookup and Strategy Init");
-    strategy = strategy_lookup[static_cast<size_t>(strat_context)].get();
-    }
-    { ZoneScopedN("Build Result");
-    TokenStrategyResult result = strategy->run(cursor_pos);
-    register_token(result);
-    }
-}
-
-// Handles registering tokens to the tokens list and handles special cases (ie: TOKEN_IGNORE)
-void Lexer::register_token(TokenStrategyResult result) {
-    ZoneScoped;
-//    std::string msg = std::format("Token Type {}, Characters Consumed {}\n", static_cast<int>(result.token.type), result.characters_consumed);
-//    std::cout << msg;
-    cursor_pos += result.characters_consumed;
-
-    switch(result.token.type) {
-        case DMToken::TokenType::TOKEN_IGNORE:
-            return;
-
-        case DMToken::TokenType::TOKEN_WHITESPACE:
-            if(indentation.is_at_line_start == true){
-                result.token.type = DMToken::TokenType::INDENT;
-            }
-            break;
-
-        case DMToken::TokenType::INDENT:
-        case DMToken::TokenType::DEDENT:
-            break;
-            
-        case DMToken::TokenType::NEWLINE:
-            indentation.is_at_line_start = true;
-            break;
-
-        default:
-            indentation.is_at_line_start = false;
-    }
-
-    tokens.emplace_back(std::move(result.token));
-}
-
 std::string Lexer::readable_token(DMToken token) {
-    if(token.type == DMToken::TokenType::TOKEN_IGNORE){
+    if(token.type == DMToken::TokenType::IGNORE){
         return "";
     }
 
-    std::string result = std::format("[{}]", interner.lookup(token.value_index));
+    std::string result = std::format("[{}]", token.name());
     if(token.type == DMToken::TokenType::NEWLINE){
         result += '\n';
     }
@@ -295,14 +330,10 @@ std::string Lexer::readable_token(DMToken token) {
 }
 
 void Lexer::register_error(std::string message, int pos){
-    tokens.emplace_back(DMToken(DMToken::TokenType::TOKEN_ERROR, interner.intern_string("TOKEN_ERROR: " + message), pos));
+    tokens.emplace_back(DMToken(DMToken::TokenType::ERROR, pos));
     cursor_pos++;
 }
 
 uint32_t Lexer::line_count() {
     return line_map.size();
-}
-
-uint32_t Lexer::get_token_value_count() {
-    return interner.size();
 }
