@@ -7,6 +7,7 @@
 #include "lex_errors.hpp"
 
 struct LexerData {
+    std::vector<DMToken> tokens;
     std::string data_string = "";
     LEXError::ErrorCode error;
     size_t line_count = 0;
@@ -18,5 +19,4 @@ class ILexerInterface {
         virtual ~ILexerInterface() = default;
 
         virtual LexerData tokenize(std::string_view source) = 0;
-        virtual std::string get_formatted_tokens() = 0;
 };

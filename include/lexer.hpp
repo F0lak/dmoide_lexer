@@ -62,24 +62,19 @@ class Lexer : public ILexerInterface {
         Lexer();
 
         LexerData tokenize(std::string_view source) override;
-        std::string get_formatted_tokens() override;
 
         uint32_t line_count();
 
     private:
-        void register_error(std::string message, int pos);
         void set_source(std::string_view new_source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
-        std::string readable_token(DMToken token);
-        void coorindate(DMToken token);
-        void new_token(DMToken::TokenType t, size_t p);
+        DMToken new_token(DMToken::TokenType t, size_t p);
 
         // these are reset every time tokenize() is ran
         std::string_view source; // The string given to the lexer
         IndentationStack indentation = IndentationStack();
         LexerState lexer_state = LexerState();
-        std::vector<DMToken> tokens;    // All of the tokens that have been generated
         std::vector<size_t> line_map;  //list of lines in the file, where the number stored is the cursor position at the beginning of the line.
         int indents = 0;
         bool is_line_map_dirty = true;

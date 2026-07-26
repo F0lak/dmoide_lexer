@@ -37,7 +37,7 @@ void test_run() {
     std::cout << "Lexer Source set successfully\n";
 
     LexerData lexer_data = lexer.tokenize(file_contents);
-    std::cout << "Scan Result:\n" << lexer.get_formatted_tokens() << "\n";
+    //std::cout << "Scan Result:\n" << lexer.get_formatted_tokens() << "\n";
 
     std::cout << TEST_FILE << " is " << file_contents.size() << " characters long\n";
     std::cout << TEST_FILE << " has " << lexer.line_count() << " lines\n";
