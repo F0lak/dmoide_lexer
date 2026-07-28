@@ -152,12 +152,17 @@ LexerData Lexer::tokenize(std::string_view source) {
                 }
                 break;
 
-            default:
-            
+            default:            
                 // Indentation
-                if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
-                    ZoneScopedN("Indentation");
-                    tokens.emplace_back(new_token(DMToken::TokenType::INDENT, cursor_pos));
+            //    if(indentation.is_at_line_start == true && (current == ' ' || current == '\t')){
+            //        ZoneScopedN("Indentation");
+            //        tokens.emplace_back(new_token(DMToken::TokenType::INDENT, cursor_pos));
+            //        cursor_pos++;
+            //        continue;
+            //    }
+                if(current == ' ' || current == '\t'){
+                    ZoneScopedN("Whtiespace");
+                    tokens.emplace_back(new_token(DMToken::TokenType::WHITESPACE, cursor_pos));
                     cursor_pos++;
                     continue;
                 }
@@ -166,6 +171,7 @@ LexerData Lexer::tokenize(std::string_view source) {
                     ZoneScopedN("Newline");
                     tokens.emplace_back(new_token(DMToken::TokenType::NEWLINE, cursor_pos));
                     cursor_pos++;
+                //    indentation.is_at_line_start = true;
                     continue;
                 }
 

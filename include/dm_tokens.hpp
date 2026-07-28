@@ -16,7 +16,7 @@
     X(STRING_MULTILINE_CLOSE, String)  \
     X(NUMBER, Number)                  \
     X(IDENTIFIER, Identifier)              \
-    X(NEWLINE, None)                 \
+    X(NEWLINE, Newline)                 \
     X(SEPARATOR, None)               \
     X(INDENT, None)                  \
     X(DEDENT, None)                  \
@@ -134,7 +134,8 @@ struct DMToken {
             Number,
             Comment,
             String,
-            Identifier
+            Identifier,
+            Newline
         };
 
         enum class TokenType : uint16_t {
@@ -160,10 +161,10 @@ struct DMToken {
         DMToken( DMToken::TokenType t, uint32_t p);
 
         DMToken::TokenType type; // uint16
-        DMToken::TokenCategory classification;
+        DMToken::TokenCategory category;
         uint32_t pos;
     //    uint16_t line;
     //    uint16_t column;
 
-        std::string_view name();
+        std::string_view name() const;
     };
