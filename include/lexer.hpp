@@ -28,6 +28,7 @@ struct LexerState {
     Context context = Context::NoContext;
     int depth = 0;
     std::vector<Context> stack;
+    int start_pos = 0;
 
     size_t size() {
         return stack.size();
@@ -69,7 +70,7 @@ class Lexer : public ILexerInterface {
         void set_source(std::string_view new_source);
         CursorCoordinate get_cursor_coordinates(int pos);
         void count_lines();
-        DMToken new_token(DMToken::TokenType t, size_t p);
+        DMToken new_token(DMToken::TokenType t, uint32_t p, uint8_t l);
 
         // these are reset every time tokenize() is ran
         std::string_view source; // The string given to the lexer

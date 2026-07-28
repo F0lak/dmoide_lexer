@@ -14,6 +14,7 @@
     X(STRING_CLOSE, String)            \
     X(STRING_MULTILINE_OPEN, String)   \
     X(STRING_MULTILINE_CLOSE, String)  \
+    X(TEXT, String)                     \
     X(NUMBER, Number)                  \
     X(IDENTIFIER, Identifier)              \
     X(NEWLINE, Newline)                 \
@@ -157,12 +158,12 @@ struct DMToken {
             #undef AS_CATEGORY
         };
 
-        DMToken(uint32_t p);
-        DMToken( DMToken::TokenType t, uint32_t p);
+        DMToken( DMToken::TokenType t, uint32_t p, uint8_t l);
 
-        DMToken::TokenType type; // uint16
-        DMToken::TokenCategory category;
-        uint32_t pos;
+        DMToken::TokenType type; // u16
+        DMToken::TokenCategory category; // u8
+        uint8_t length = 0; // u8
+        uint32_t pos = 0;  // u32
     //    uint16_t line;
     //    uint16_t column;
 
