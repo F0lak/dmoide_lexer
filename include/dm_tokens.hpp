@@ -126,46 +126,45 @@
 
 
 struct DMToken {
-    public:
-        enum class TokenCategory : uint8_t {
-            None,
-            Keyword,
-            Operator,
-            Literal,
-            Number,
-            Comment,
-            String,
-            Identifier,
-            Newline
+    enum class TokenCategory : uint8_t {
+        None,
+        Keyword,
+        Operator,
+        Literal,
+        Number,
+        Comment,
+        String,
+        Identifier,
+        Newline
+    };
+
+    enum class TokenType : uint16_t {
+        #define AS_ENUM(name, category) name,
+        TOKEN_LIST(AS_ENUM)
+        #undef AS_ENUM
         };
 
-        enum class TokenType : uint16_t {
-            #define AS_ENUM(name) name,
-            TOKEN_LIST(AS_ENUM)
-            #undef AS_ENUM
-            };
+    // Using std::array with std::string_view for a compile-time, zero-allocation table
+    static constexpr std::string_view token_names[] = {
+        #define AS_STRING(name, category) #name,
+        TOKEN_LIST(AS_STRING)
+        #undef AS_STRING
+    };
 
-        // Using std::array with std::string_view for a compile-time, zero-allocation table
-        static constexpr std::string_view token_names[] = {
-            #define AS_STRING(name) #name,
-            TOKEN_LIST(AS_STRING)
-            #undef AS_STRING
-        };
+    static constexpr TokenCategory token_classes[] = {
+        #define AS_CATEGORY(name, category) TokenCategory::category,
+        TOKEN_LIST(AS_CATEGORY)
+        #undef AS_CATEGORY
+    };
 
-        static constexpr TokenCategory token_classes[] = {
-            #define AS_CATEGORY(name, classification) TokenCategory::classification,
-            TOKEN_LIST(AS_CATEGORY)
-            #undef AS_CATEGORY
-        };
+    DMToken( DMToken::TokenType t, uint32_t p, uint8_t l);
 
-        DMToken( DMToken::TokenType t, uint32_t p, uint8_t l);
+    DMToken::TokenType type; // u16
+    DMToken::TokenCategory category; // u8
+    uint8_t length = 0; // u8
+    uint32_t pos = 0;  // u32
+//    uint16_t line;
+//    uint16_t column;
 
-        DMToken::TokenType type; // u16
-        DMToken::TokenCategory category; // u8
-        uint8_t length = 0; // u8
-        uint32_t pos = 0;  // u32
-    //    uint16_t line;
-    //    uint16_t column;
-
-        std::string_view name() const;
+    std::string_view name() const;
     };
