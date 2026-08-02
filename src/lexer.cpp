@@ -90,17 +90,23 @@ LexerData Lexer::tokenize(std::string_view source) {
             case LexerState::Context::StringInline:
                 { ZoneScopedN("String Crawl");
                 if(current == '['){
-                    tokens.emplace_back(new_token(DMToken::TokenType::TEXT, lexer_state.start_pos, cursor_pos - lexer_state.start_pos));
+                    if(cursor_pos - lexer_state.start_pos > 0){
+                        tokens.emplace_back(new_token(DMToken::TokenType::TEXT, lexer_state.start_pos, cursor_pos - lexer_state.start_pos));  
+                    }
                     tokens.emplace_back(new_token(DMToken::TokenType::EMBED_OPEN, cursor_pos, 1));
                     lexer_state.push(LexerState::Context::NoContext);
                 }
                 if(current == '"'){
-                    tokens.emplace_back(new_token(DMToken::TokenType::TEXT, lexer_state.start_pos, cursor_pos - lexer_state.start_pos));
+                    if(cursor_pos - lexer_state.start_pos > 0){
+                        tokens.emplace_back(new_token(DMToken::TokenType::TEXT, lexer_state.start_pos, cursor_pos - lexer_state.start_pos));  
+                    }
                     tokens.emplace_back(new_token(DMToken::TokenType::STRING_CLOSE, cursor_pos, 1));
                     lexer_state.pop();
                 }
                 if(current == '\n'){
-                    tokens.emplace_back(new_token(DMToken::TokenType::TEXT, lexer_state.start_pos, cursor_pos - lexer_state.start_pos));
+                    if(cursor_pos - lexer_state.start_pos > 0){
+                        tokens.emplace_back(new_token(DMToken::TokenType::TEXT, lexer_state.start_pos, cursor_pos - lexer_state.start_pos));  
+                    }
                     tokens.emplace_back(new_token(DMToken::TokenType::NEWLINE, cursor_pos, 1));
                     lexer_state.pop();
                 }
@@ -224,6 +230,7 @@ LexerData Lexer::tokenize(std::string_view source) {
                     tokens.emplace_back(new_token(DMToken::TokenType::EMBED_CLOSE, cursor_pos, 1));
                     lexer_state.pop();
                     cursor_pos++;
+                    lexer_state.start_pos = cursor_pos;
                     continue;
                 }
 
